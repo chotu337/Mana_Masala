@@ -1,222 +1,322 @@
 // ==========================================
-// MANA MASALA - ADMIN DASHBOARD
+// MANA MASALA ADMIN DASHBOARD
 // ==========================================
-// Supabase project
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
-// Supabase Publishable Key
 const SUPABASE_KEY =
-    "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
+    "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+let supabaseClient = null;
 // ==========================================
-// SUPABASE CLIENT
+// LOAD SUPABASE
 // ==========================================
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-console.log("Supabase client initialized");
-// ==========================================
-// GET HTML ELEMENT
-// ==========================================
-function $(id) {
-    return document.getElementById(id);
+function loadSupabase() {
+    return new Promise((resolve, reject) => {
+        // Already loaded
+        if (window.supabase) {
+            resolve();
+            return;
+        }
+        const script =
+            document.createElement("script");
+        script.src =
+            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+        script.onload = resolve;
+        script.onerror = () => {
+            reject(
+                new Error(
+                    "Could not load Supabase library."
+                )
+            );
+        };
+        document.head.appendChild(script);
+    });
 }
 // ==========================================
-// CHECK LOGIN SESSION
+// INITIALIZE
+// ==========================================
+async function initializeAdmin() {
+    try {
+        if (
+            !SUPABASE_KEY ||
+            SUPABASE_KEY ===
+            "PASTE_YOUR_PUBLISHABLE_KEY_HERE"
+        ) {
+            showError(
+                "Supabase Publishable Key is missing in admin.js"
+            );
+            return;
+        }
+        await loadSupabase();
+        supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+        console.log(
+            "Supabase initialized successfully"
+        );
+        await checkSession();
+    } catch (error) {
+        console.error(
+            "Initialization error:",
+            error
+        );
+        showError(error.message);
+    }
+}
+// ==========================================
+// CHECK SESSION
 // ==========================================
 async function checkSession() {
     const {
         data,
         error
-    } = await supabaseClient.auth.getSession();
+    } =
+        await supabaseClient.auth.getSession();
     if (error) {
-        console.error("Session error:", error);
+        console.error(
+            "Session error:",
+            error
+        );
         showLogin();
         return;
     }
     if (data.session) {
         showDashboard();
-        loadOrders();
+        await loadOrders();
     } else {
         showLogin();
     }
 }
 // ==========================================
-// SHOW LOGIN
-// ==========================================
-function showLogin() {
-    if ($("loginSection")) {
-        $("loginSection").style.display = "flex";
-    }
-    if ($("dashboardSection")) {
-        $("dashboardSection").style.display = "none";
-    }
-}
-// ==========================================
-// SHOW DASHBOARD
-// ==========================================
-function showDashboard() {
-    if ($("loginSection")) {
-        $("loginSection").style.display = "none";
-    }
-    if ($("dashboardSection")) {
-        $("dashboardSection").style.display = "block";
-    }
-}
-// ==========================================
-// ADMIN LOGIN
+// LOGIN
 // ==========================================
 async function loginAdmin() {
-    const emailElement = $("adminEmail");
-    const passwordElement = $("adminPassword");
-    if (!emailElement || !passwordElement) {
-        alert("Login fields not found.");
-        return;
-    }
-    const email = emailElement.value.trim();
-    const password = passwordElement.value;
+    const email =
+        document
+            .getElementById("adminEmail")
+            .value
+            .trim();
+    const password =
+        document
+            .getElementById("adminPassword")
+            .value;
+    const message =
+        document.getElementById(
+            "loginMessage"
+        );
     if (!email || !password) {
-        alert("Please enter your email and password.");
+        message.textContent =
+            "Please enter email and password.";
         return;
     }
-    console.log("Attempting admin login...");
+    message.textContent =
+        "Logging in...";
     const {
         data,
         error
-    } = await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-    });
+    } =
+        await supabaseClient.auth
+            .signInWithPassword({
+                email: email,
+                password: password
+            });
     if (error) {
-        console.error("Login error:", error);
-        alert(
-            "Login failed:\n\n" +
-            error.message
+        console.error(
+            "Login error:",
+            error
         );
+        message.textContent =
+            error.message;
         return;
     }
-    console.log("Admin login successful:", data.user);
+    console.log(
+        "Login successful:",
+        data.user.email
+    );
+    message.textContent = "";
     showDashboard();
-    loadOrders();
+    await loadOrders();
 }
 // ==========================================
 // LOAD ORDERS
 // ==========================================
 async function loadOrders() {
-    const tableBody = $("ordersTableBody");
-    if (!tableBody) {
-        console.error("ordersTableBody not found.");
-        return;
-    }
+    const tableBody =
+        document.getElementById(
+            "ordersTableBody"
+        );
+    const orderCount =
+        document.getElementById(
+            "orderCount"
+        );
+    const dashboardMessage =
+        document.getElementById(
+            "dashboardMessage"
+        );
+    if (!tableBody) return;
     tableBody.innerHTML = `
         <tr>
-            <td colspan="8">
+            <td colspan="9">
                 Loading orders...
             </td>
         </tr>
     `;
-    console.log("Loading orders...");
+    if (dashboardMessage) {
+        dashboardMessage.textContent = "";
+    }
     const {
         data: orders,
         error
-    } = await supabaseClient
-        .from("orders")
-        .select("*")
-        .order("created_at", {
-            ascending: false
-        });
+    } =
+        await supabaseClient
+            .from("orders")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
     if (error) {
-        console.error("Orders loading error:", error);
+        console.error(
+            "Order loading error:",
+            error
+        );
         tableBody.innerHTML = `
             <tr>
-                <td colspan="8">
-                    Unable to load orders.<br><br>
+                <td colspan="9">
+                    Unable to load orders.
+                    <br><br>
                     ${escapeHTML(error.message)}
                 </td>
             </tr>
         `;
+        if (orderCount) {
+            orderCount.textContent =
+                "Error loading orders";
+        }
         return;
     }
-    console.log("Orders received:", orders);
     if (!orders || orders.length === 0) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="8">
+                <td colspan="9">
                     No orders found.
                 </td>
             </tr>
         `;
+        if (orderCount) {
+            orderCount.textContent =
+                "0 orders";
+        }
         return;
+    }
+    if (orderCount) {
+        orderCount.textContent =
+            `${orders.length} order${
+                orders.length === 1
+                    ? ""
+                    : "s"
+            }`;
     }
     tableBody.innerHTML = "";
     orders.forEach(order => {
-        const row = document.createElement("tr");
-        const orderId =
-            order.id !== null && order.id !== undefined
-                ? order.id
-                : "";
-        const customerName =
-            order.customer_name || "";
-        const phone =
-            order.customer_phone || "";
-        const quantity =
-            order.quantity_kg || 0;
-        const address =
-            order.address || "";
-        const total =
-            order.total_amount || 0;
+        const row =
+            document.createElement("tr");
+        const date =
+            order.created_at
+                ? new Date(
+                    order.created_at
+                ).toLocaleString()
+                : "-";
         const status =
             order.status || "New";
-        const createdAt =
-            order.created_at
-                ? new Date(order.created_at).toLocaleString()
-                : "-";
         row.innerHTML = `
             <td>
-                ${escapeHTML(orderId)}
+                ${escapeHTML(order.id)}
             </td>
             <td>
-                ${escapeHTML(createdAt)}
+                ${escapeHTML(date)}
             </td>
             <td>
-                ${escapeHTML(customerName)}
+                ${escapeHTML(
+                    order.customer_name
+                )}
             </td>
             <td>
-                ${escapeHTML(phone)}
+                ${escapeHTML(
+                    order.customer_phone
+                )}
             </td>
             <td>
-                ${escapeHTML(quantity)} kg
+                ${escapeHTML(
+                    order.quantity_kg
+                )} kg
             </td>
             <td>
-                ${escapeHTML(address)}
+                ${escapeHTML(
+                    order.address
+                )}
             </td>
             <td>
-                ₹${escapeHTML(total)}
+                ₹${escapeHTML(
+                    order.total_amount
+                )}
             </td>
             <td>
                 <select
-                    id="status-${escapeHTML(orderId)}"
+                    id="status-${escapeHTML(
+                        order.id
+                    )}"
                 >
-                    <option value="New"
-                        ${status === "New" ? "selected" : ""}>
+                    <option
+                        value="New"
+                        ${
+                            status === "New"
+                                ? "selected"
+                                : ""
+                        }
+                    >
                         New
                     </option>
-                    <option value="Processing"
-                        ${status === "Processing" ? "selected" : ""}>
+                    <option
+                        value="Processing"
+                        ${
+                            status === "Processing"
+                                ? "selected"
+                                : ""
+                        }
+                    >
                         Processing
                     </option>
-                    <option value="Completed"
-                        ${status === "Completed" ? "selected" : ""}>
+                    <option
+                        value="Completed"
+                        ${
+                            status === "Completed"
+                                ? "selected"
+                                : ""
+                        }
+                    >
                         Completed
                     </option>
-                    <option value="Cancelled"
-                        ${status === "Cancelled" ? "selected" : ""}>
+                    <option
+                        value="Cancelled"
+                        ${
+                            status === "Cancelled"
+                                ? "selected"
+                                : ""
+                        }
+                    >
                         Cancelled
                     </option>
                 </select>
+            </td>
+            <td>
                 <button
-                    onclick="updateStatus('${escapeAttribute(orderId)}')"
+                    onclick="updateStatus('${escapeAttribute(
+                        order.id
+                    )}')"
                 >
                     Update
                 </button>
@@ -226,7 +326,7 @@ async function loadOrders() {
     });
 }
 // ==========================================
-// UPDATE ORDER STATUS
+// UPDATE STATUS
 // ==========================================
 async function updateStatus(orderId) {
     const select =
@@ -234,26 +334,25 @@ async function updateStatus(orderId) {
             `status-${orderId}`
         );
     if (!select) {
-        alert("Status selector not found.");
+        alert(
+            "Status selector not found."
+        );
         return;
     }
-    const newStatus = select.value;
-    console.log(
-        "Updating order:",
-        orderId,
-        newStatus
-    );
+    const newStatus =
+        select.value;
     const {
         error
-    } = await supabaseClient
-        .from("orders")
-        .update({
-            status: newStatus
-        })
-        .eq("id", orderId);
+    } =
+        await supabaseClient
+            .from("orders")
+            .update({
+                status: newStatus
+            })
+            .eq("id", orderId);
     if (error) {
         console.error(
-            "Status update error:",
+            "Update error:",
             error
         );
         alert(
@@ -265,7 +364,7 @@ async function updateStatus(orderId) {
     alert(
         "Order status updated successfully."
     );
-    loadOrders();
+    await loadOrders();
 }
 // ==========================================
 // LOGOUT
@@ -273,16 +372,52 @@ async function updateStatus(orderId) {
 async function logoutAdmin() {
     const {
         error
-    } = await supabaseClient.auth.signOut();
+    } =
+        await supabaseClient.auth
+            .signOut();
     if (error) {
-        console.error(
-            "Logout error:",
-            error
-        );
         alert(error.message);
         return;
     }
     showLogin();
+}
+// ==========================================
+// SHOW LOGIN
+// ==========================================
+function showLogin() {
+    document.getElementById(
+        "loginSection"
+    ).style.display = "flex";
+    document.getElementById(
+        "dashboardSection"
+    ).style.display = "none";
+}
+// ==========================================
+// SHOW DASHBOARD
+// ==========================================
+function showDashboard() {
+    document.getElementById(
+        "loginSection"
+    ).style.display = "none";
+    document.getElementById(
+        "dashboardSection"
+    ).style.display = "block";
+}
+// ==========================================
+// ERROR
+// ==========================================
+function showError(message) {
+    console.error(message);
+    const loginMessage =
+        document.getElementById(
+            "loginMessage"
+        );
+    if (loginMessage) {
+        loginMessage.textContent =
+            message;
+        return;
+    }
+    alert(message);
 }
 // ==========================================
 // HTML SAFETY
@@ -299,7 +434,10 @@ function escapeHTML(value) {
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 }
 function escapeAttribute(value) {
     if (
@@ -309,16 +447,54 @@ function escapeAttribute(value) {
         return "";
     }
     return String(value)
-        .replace(/\\/g, "\\\\")
-        .replace(/'/g, "\\'");
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        );
 }
 // ==========================================
-// MAKE FUNCTIONS AVAILABLE TO HTML
+// FORM EVENTS
 // ==========================================
-window.loginAdmin = loginAdmin;
-window.logoutAdmin = logoutAdmin;
-window.updateStatus = updateStatus;
-// ==========================================
-// START
-// ==========================================
-checkSession();
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        const loginForm =
+            document.getElementById(
+                "loginForm"
+            );
+        if (loginForm) {
+            loginForm.addEventListener(
+                "submit",
+                event => {
+                    event.preventDefault();
+                    loginAdmin();
+                }
+            );
+        }
+        const logoutButton =
+            document.getElementById(
+                "logoutButton"
+            );
+        if (logoutButton) {
+            logoutButton.addEventListener(
+                "click",
+                logoutAdmin
+            );
+        }
+        const refreshButton =
+            document.getElementById(
+                "refreshButton"
+            );
+        if (refreshButton) {
+            refreshButton.addEventListener(
+                "click",
+                loadOrders
+            );
+        }
+        initializeAdmin();
+    }
+);
