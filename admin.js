@@ -1,25 +1,29 @@
-// =========================================
-// MANA MASALA - ADMIN DASHBOARD
-// =========================================
+/* =========================================================
+   MANA MASALA ADMIN DASHBOARD
+   SUPABASE AUTH + ORDERS
+========================================================= */
 
-// Supabase project
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
+    "YOUR_EXISTING_SUPABASE_PUBLISHABLE_KEY";
 
-// Create Supabase client
+
+/* =========================================================
+   SUPABASE CLIENT
+========================================================= */
+
 const supabaseClient =
-    supabase.createClient(
+    window.supabase.createClient(
         SUPABASE_URL,
         SUPABASE_KEY
     );
 
 
-// =========================================
-// HTML ELEMENTS
-// =========================================
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
 const loginSection =
     document.getElementById("loginSection");
@@ -27,11 +31,14 @@ const loginSection =
 const dashboardSection =
     document.getElementById("dashboardSection");
 
-const emailInput =
-    document.getElementById("email");
+const loginForm =
+    document.getElementById("loginForm");
 
-const passwordInput =
-    document.getElementById("password");
+const adminEmail =
+    document.getElementById("adminEmail");
+
+const adminPassword =
+    document.getElementById("adminPassword");
 
 const loginButton =
     document.getElementById("loginButton");
@@ -42,308 +49,173 @@ const loginMessage =
 const logoutButton =
     document.getElementById("logoutButton");
 
-const ordersTable =
-    document.getElementById("ordersTable");
+const refreshButton =
+    document.getElementById("refreshButton");
 
-const totalOrders =
-    document.getElementById("totalOrders");
+const ordersTableBody =
+    document.getElementById("ordersTableBody");
 
-const totalQuantity =
-    document.getElementById("totalQuantity");
+const orderCount =
+    document.getElementById("orderCount");
 
-const totalSales =
-    document.getElementById("totalSales");
-
-
-// =========================================
-// ESCAPE HTML
-// Prevent customer input from becoming HTML
-// =========================================
-
-function escapeHtml(value) {
-
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-
-}
+const dashboardMessage =
+    document.getElementById("dashboardMessage");
 
 
-// =========================================
-// SHOW LOGIN
-// =========================================
+/* =========================================================
+   LOGIN
+========================================================= */
 
-function showLogin() {
+loginForm.addEventListener(
+    "submit",
+    async function (event) {
 
-    loginSection.style.display = "block";
+        event.preventDefault();
 
-    dashboardSection.style.display = "none";
+        const email =
+            adminEmail.value.trim();
 
-}
+        const password =
+            adminPassword.value;
 
 
-// =========================================
-// SHOW DASHBOARD
-// =========================================
+        loginButton.disabled = true;
+
+        loginButton.textContent =
+            "Signing in...";
+
+        loginMessage.textContent = "";
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            if (!data.session) {
+                throw new Error(
+                    "Login session was not created."
+                );
+            }
+
+
+            loginMessage.textContent =
+                "Login successful.";
+
+            loginMessage.style.color =
+                "green";
+
+
+            showDashboard();
+
+            await loadOrders();
+
+
+        } catch (error) {
+
+            console.error(
+                "Login error:",
+                error
+            );
+
+            loginMessage.textContent =
+                error.message ||
+                "Invalid login credentials.";
+
+            loginMessage.style.color =
+                "red";
+
+        } finally {
+
+            loginButton.disabled = false;
+
+            loginButton.textContent =
+                "Login";
+        }
+    }
+);
+
+
+/* =========================================================
+   SHOW DASHBOARD
+========================================================= */
 
 function showDashboard() {
 
-    loginSection.style.display = "none";
+    loginSection.style.display =
+        "none";
 
-    dashboardSection.style.display = "block";
-
+    dashboardSection.style.display =
+        "block";
 }
 
 
-// =========================================
-// LOGIN
-// =========================================
+/* =========================================================
+   SHOW LOGIN
+========================================================= */
 
-loginButton.addEventListener("click", async function () {
+function showLogin() {
 
-    const email =
-        emailInput.value.trim();
+    dashboardSection.style.display =
+        "none";
 
-    const password =
-        passwordInput.value;
-
-    loginMessage.textContent = "";
-
-    if (!email || !password) {
-
-        loginMessage.textContent =
-            "Please enter email and password.";
-
-        loginMessage.style.color = "red";
-
-        return;
-    }
+    loginSection.style.display =
+        "flex";
+}
 
 
-    loginButton.disabled = true;
-
-    loginButton.textContent = "Logging in...";
-
-
-    try {
-
-        const { data, error } =
-            await supabaseClient.auth.signInWithPassword({
-
-                email: email,
-
-                password: password
-
-            });
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        if (!data.session) {
-
-            throw new Error(
-                "Login failed. Please try again."
-            );
-
-        }
-
-
-        loginMessage.textContent =
-            "Login successful!";
-
-        loginMessage.style.color = "green";
-
-
-        showDashboard();
-
-        await loadOrders();
-
-
-    } catch (error) {
-
-        console.error("Login error:", error);
-
-        loginMessage.textContent =
-            error.message || "Login failed.";
-
-        loginMessage.style.color = "red";
-
-    } finally {
-
-        loginButton.disabled = false;
-
-        loginButton.textContent = "Login";
-
-    }
-
-});
-
-
-// =========================================
-// LOAD ORDERS
-// =========================================
+/* =========================================================
+   LOAD ORDERS
+========================================================= */
 
 async function loadOrders() {
 
-    ordersTable.innerHTML = `
+    ordersTableBody.innerHTML = `
         <tr>
-            <td colspan="7" class="empty">
+            <td colspan="9">
                 Loading orders...
             </td>
         </tr>
     `;
 
+    dashboardMessage.textContent = "";
+
 
     try {
 
-        const { data: orders, error } =
+        const {
+            data: orders,
+            error
+        } =
             await supabaseClient
                 .from("orders")
                 .select("*")
-                .order("created_at", {
-                    ascending: false
-                });
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
         if (error) {
-
             throw error;
-
         }
 
 
-        // =====================================
-        // NO ORDERS
-        // =====================================
-
-        if (!orders || orders.length === 0) {
-
-            totalOrders.textContent = "0";
-
-            totalQuantity.textContent = "0 kg";
-
-            totalSales.textContent = "₹0";
-
-
-            ordersTable.innerHTML = `
-                <tr>
-                    <td colspan="7" class="empty">
-                        No customer orders yet.
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-
-        // =====================================
-        // CALCULATE STATISTICS
-        // =====================================
-
-        const orderCount =
-            orders.length;
-
-
-        const quantity =
-            orders.reduce(
-                function (sum, order) {
-
-                    return sum +
-                        Number(order.quantity_kg || 0);
-
-                },
-                0
-            );
-
-
-        const sales =
-            orders.reduce(
-                function (sum, order) {
-
-                    return sum +
-                        Number(order.total_amount || 0);
-
-                },
-                0
-            );
-
-
-        totalOrders.textContent =
-            orderCount;
-
-
-        totalQuantity.textContent =
-            quantity + " kg";
-
-
-        totalSales.textContent =
-            "₹" + sales.toLocaleString("en-IN");
-
-
-        // =====================================
-        // DISPLAY ORDERS
-        // =====================================
-
-        ordersTable.innerHTML =
-            orders.map(function (order) {
-
-                const date =
-                    order.created_at
-                        ? new Date(
-                            order.created_at
-                        ).toLocaleString("en-IN")
-                        : "-";
-
-
-                return `
-                    <tr>
-
-                        <td>
-                            ${escapeHtml(order.customer_name)}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(order.customer_phone)}
-                        </td>
-
-                        <td>
-                            ${escapeHtml(order.quantity_kg)} kg
-                        </td>
-
-                        <td>
-                            ${escapeHtml(order.address)}
-                        </td>
-
-                        <td>
-                            ₹${Number(
-                                order.total_amount || 0
-                            ).toLocaleString("en-IN")}
-                        </td>
-
-                        <td>
-                            <span class="status">
-                                ${escapeHtml(order.status || "New")}
-                            </span>
-                        </td>
-
-                        <td>
-                            ${escapeHtml(date)}
-                        </td>
-
-                    </tr>
-                `;
-
-            }).join("");
+        displayOrders(orders || []);
 
 
     } catch (error) {
@@ -353,25 +225,335 @@ async function loadOrders() {
             error
         );
 
-
-        ordersTable.innerHTML = `
+        ordersTableBody.innerHTML = `
             <tr>
-                <td colspan="7" class="empty">
+                <td colspan="9">
                     Unable to load orders.
-                    <br>
-                    ${escapeHtml(error.message)}
                 </td>
             </tr>
         `;
 
-    }
+        dashboardMessage.textContent =
+            error.message ||
+            "Unable to load orders.";
 
+        dashboardMessage.style.color =
+            "red";
+    }
 }
 
 
-// =========================================
-// LOGOUT
-// =========================================
+/* =========================================================
+   DISPLAY ORDERS
+========================================================= */
+
+function displayOrders(orders) {
+
+    orderCount.textContent =
+        orders.length +
+        (orders.length === 1
+            ? " order"
+            : " orders");
+
+
+    if (orders.length === 0) {
+
+        ordersTableBody.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    No orders found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    ordersTableBody.innerHTML =
+        orders.map(function (order) {
+
+            const date =
+                order.created_at
+                    ? new Date(
+                        order.created_at
+                    ).toLocaleString(
+                        "en-IN"
+                    )
+                    : "-";
+
+
+            const total =
+                Number(
+                    order.total_amount || 0
+                ).toLocaleString(
+                    "en-IN"
+                );
+
+
+            const quantity =
+                order.quantity_kg || 0;
+
+
+            const status =
+                order.status || "New";
+
+
+            return `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            order.id || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(date)}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.customer_name || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.customer_phone || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            quantity
+                        )} kg
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            order.address || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ₹${escapeHtml(total)}
+                    </td>
+
+                    <td>
+
+                        <select
+                            class="status-select"
+                            data-id="${escapeHtml(
+                                order.id
+                            )}"
+                        >
+
+                            <option
+                                value="New"
+                                ${status === "New"
+                                    ? "selected"
+                                    : ""}
+                            >
+                                New
+                            </option>
+
+                            <option
+                                value="Processing"
+                                ${status === "Processing"
+                                    ? "selected"
+                                    : ""}
+                            >
+                                Processing
+                            </option>
+
+                            <option
+                                value="Completed"
+                                ${status === "Completed"
+                                    ? "selected"
+                                    : ""}
+                            >
+                                Completed
+                            </option>
+
+                            <option
+                                value="Cancelled"
+                                ${status === "Cancelled"
+                                    ? "selected"
+                                    : ""}
+                            >
+                                Cancelled
+                            </option>
+
+                        </select>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="update-button"
+                            data-id="${escapeHtml(
+                                order.id
+                            )}"
+                        >
+                            Update
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+
+    attachUpdateButtons();
+}
+
+
+/* =========================================================
+   UPDATE BUTTONS
+========================================================= */
+
+function attachUpdateButtons() {
+
+    const buttons =
+        document.querySelectorAll(
+            ".update-button"
+        );
+
+
+    buttons.forEach(function (button) {
+
+        button.addEventListener(
+            "click",
+            async function () {
+
+                const orderId =
+                    button.dataset.id;
+
+
+                const select =
+                    document.querySelector(
+                        `.status-select[data-id="${orderId}"]`
+                    );
+
+
+                if (!select) {
+                    return;
+                }
+
+
+                const newStatus =
+                    select.value;
+
+
+                button.disabled = true;
+
+                button.textContent =
+                    "Saving...";
+
+
+                try {
+
+                    const {
+                        error
+                    } =
+                        await supabaseClient
+                            .from("orders")
+                            .update({
+                                status: newStatus
+                            })
+                            .eq(
+                                "id",
+                                orderId
+                            );
+
+
+                    if (error) {
+                        throw error;
+                    }
+
+
+                    button.textContent =
+                        "Saved";
+
+                    button.style.color =
+                        "green";
+
+
+                    setTimeout(
+                        function () {
+
+                            button.textContent =
+                                "Update";
+
+                            button.style.color =
+                                "";
+
+                        },
+                        1500
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Update error:",
+                        error
+                    );
+
+                    alert(
+                        "Could not update order: " +
+                        error.message
+                    );
+
+                    button.textContent =
+                        "Update";
+
+
+                } finally {
+
+                    button.disabled =
+                        false;
+                }
+            }
+        );
+    });
+}
+
+
+/* =========================================================
+   REFRESH
+========================================================= */
+
+refreshButton.addEventListener(
+    "click",
+    async function () {
+
+        refreshButton.disabled =
+            true;
+
+        refreshButton.textContent =
+            "Refreshing...";
+
+
+        await loadOrders();
+
+
+        refreshButton.disabled =
+            false;
+
+        refreshButton.textContent =
+            "🔄 Refresh";
+    }
+);
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
 
 logoutButton.addEventListener(
     "click",
@@ -381,64 +563,53 @@ logoutButton.addEventListener(
 
         showLogin();
 
-        emailInput.value = "";
-
-        passwordInput.value = "";
-
-        loginMessage.textContent = "";
-
+        adminPassword.value = "";
     }
 );
 
 
-// =========================================
-// CHECK EXISTING LOGIN SESSION
-// =========================================
+/* =========================================================
+   CHECK EXISTING SESSION
+========================================================= */
 
 async function checkSession() {
 
-    try {
-
-        const { data, error } =
-            await supabaseClient.auth.getSession();
-
-
-        if (error) {
-
-            throw error;
-
-        }
+    const {
+        data
+    } =
+        await supabaseClient.auth.getSession();
 
 
-        if (data.session) {
+    if (data.session) {
 
-            showDashboard();
+        showDashboard();
 
-            await loadOrders();
+        await loadOrders();
 
-        } else {
-
-            showLogin();
-
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Session error:",
-            error
-        );
+    } else {
 
         showLogin();
-
     }
-
 }
 
 
-// =========================================
-// START ADMIN PAGE
-// =========================================
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* =========================================================
+   START
+========================================================= */
 
 checkSession();
