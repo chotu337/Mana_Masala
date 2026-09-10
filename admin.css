@@ -1,0 +1,278 @@
+/* =========================================================
+   MANA MASALA - ADMIN DASHBOARD
+========================================================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #1f2937;
+}
+/* =========================================================
+   LOGIN
+========================================================= */
+.login-section {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(
+        135deg,
+        #fff7ed,
+        #f5f7fb
+    );
+}
+.login-card {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    padding: 40px 32px;
+    border-radius: 18px;
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.10);
+}
+.logo {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 38px;
+    background: #fff1f2;
+    border-radius: 50%;
+}
+.login-card h1 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 5px;
+}
+.subtitle {
+    text-align: center;
+    color: #6b7280;
+    margin-bottom: 30px;
+}
+.login-card label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 7px;
+    margin-top: 16px;
+}
+.login-card input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 9px;
+    font-size: 15px;
+    outline: none;
+}
+.login-card input:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.10);
+}
+#loginButton {
+    width: 100%;
+    margin-top: 25px;
+    padding: 14px;
+    border: none;
+    border-radius: 9px;
+    background: #dc2626;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+#loginButton:hover {
+    background: #b91c1c;
+}
+#loginButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+#loginMessage {
+    text-align: center;
+    margin-top: 15px;
+    min-height: 20px;
+}
+/* =========================================================
+   DASHBOARD HEADER
+========================================================= */
+.dashboard-section {
+    min-height: 100vh;
+}
+.dashboard-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 18px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.dashboard-header h1 {
+    font-size: 24px;
+    margin-bottom: 4px;
+}
+.dashboard-header p {
+    color: #6b7280;
+    font-size: 14px;
+}
+.logout-button {
+    padding: 10px 18px;
+    border: 1px solid #dc2626;
+    border-radius: 8px;
+    background: white;
+    color: #dc2626;
+    font-weight: 600;
+    cursor: pointer;
+}
+.logout-button:hover {
+    background: #dc2626;
+    color: white;
+}
+/* =========================================================
+   DASHBOARD CONTAINER
+========================================================= */
+.dashboard-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 30px;
+}
+.dashboard-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.dashboard-top h2 {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+#orderCount {
+    color: #6b7280;
+    font-size: 14px;
+}
+.refresh-button {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+.refresh-button:hover {
+    background: #374151;
+}
+.refresh-button:disabled {
+    opacity: 0.7;
+}
+/* =========================================================
+   MESSAGE
+========================================================= */
+.dashboard-message {
+    min-height: 20px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+/* =========================================================
+   TABLE
+========================================================= */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.06);
+}
+table {
+    width: 100%;
+    min-width: 1100px;
+    border-collapse: collapse;
+}
+thead {
+    background: #111827;
+    color: white;
+}
+th {
+    padding: 15px 12px;
+    text-align: left;
+    font-size: 13px;
+    white-space: nowrap;
+}
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 14px;
+    vertical-align: top;
+}
+tbody tr:hover {
+    background: #f9fafb;
+}
+tbody tr:last-child td {
+    border-bottom: none;
+}
+/* =========================================================
+   STATUS SELECT
+========================================================= */
+.status-select {
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 7px;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+/* =========================================================
+   UPDATE BUTTON
+========================================================= */
+.update-button {
+    padding: 8px 13px;
+    border: none;
+    border-radius: 7px;
+    background: #16a34a;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+.update-button:hover {
+    background: #15803d;
+}
+.update-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+/* =========================================================
+   MOBILE
+========================================================= */
+@media (max-width: 700px) {
+    .dashboard-header {
+        padding: 15px;
+    }
+    .dashboard-header h1 {
+        font-size: 19px;
+    }
+    .dashboard-container {
+        padding: 15px;
+    }
+    .dashboard-top {
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .dashboard-top h2 {
+        font-size: 22px;
+    }
+    .refresh-button {
+        padding: 9px 12px;
+    }
+    .login-card {
+        padding: 30px 22px;
+    }
+}
