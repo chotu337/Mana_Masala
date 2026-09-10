@@ -364,23 +364,3 @@ function setupOrderSystem() {
     ===================================================== */
     updateSummary();
 }
-
-⚠️ One important thing
-
-In the code above, do not replace your existing Supabase publishable key with the text YOUR_SUPABASE_PUBLISHABLE_KEY.
-
-Keep the publishable key that is already in your working script.js.
-
-Do not put your RESEND_API_KEY in script.js. That key must remain inside Supabase Edge Function secrets.
-
-Then
-
-1. Open GitHub → script.js.
-2. Select all old code.
-3. Replace it with the code above.
-4. Keep your existing Supabase publishable key.
-5. Commit the changes.
-6. Wait a minute for GitHub Pages to update.
-7. Open the website and place a test order.
-
-If the order is saved but the email notification still fails, the order will remain saved. Then we’ll troubleshoot the Edge Function separately.
