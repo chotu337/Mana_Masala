@@ -1,6 +1,5 @@
 /* =========================================
-   MANA MASALA - SUPABASE ORDER SYSTEM
-   Order + Edge Function Notification
+   MANA MASALA - ORDER SYSTEM
 ========================================= */
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
@@ -23,7 +22,7 @@ supabaseScript.onload = function () {
             SUPABASE_URL,
             SUPABASE_KEY
         );
-    console.log("✅ Supabase connected");
+    console.log("✅ Mana Masala Supabase connected");
 };
 supabaseScript.onerror = function () {
     console.error(
@@ -34,7 +33,7 @@ document.head.appendChild(
     supabaseScript
 );
 /* =========================================
-   GET HTML ELEMENTS
+   GET ELEMENTS
 ========================================= */
 const quantityInput =
     document.getElementById("quantity");
@@ -85,7 +84,7 @@ function updateTotal() {
         total.toLocaleString("en-IN");
 }
 /* =========================================
-   SHOW MESSAGE
+   MESSAGE
 ========================================= */
 function showMessage(
     message,
@@ -93,16 +92,13 @@ function showMessage(
 ) {
     orderMessage.textContent =
         message;
-    if (type === "success") {
-        orderMessage.style.color =
-            "green";
-    } else {
-        orderMessage.style.color =
-            "red";
-    }
+    orderMessage.style.color =
+        type === "success"
+            ? "green"
+            : "red";
 }
 /* =========================================
-   PLUS BUTTON
+   PLUS
 ========================================= */
 increaseButton.addEventListener(
     "click",
@@ -112,8 +108,7 @@ increaseButton.addEventListener(
                 quantityInput.value
             );
         if (isNaN(quantity)) {
-            quantity =
-                MINIMUM_ORDER;
+            quantity = MINIMUM_ORDER;
         }
         quantity++;
         quantityInput.value =
@@ -122,7 +117,7 @@ increaseButton.addEventListener(
     }
 );
 /* =========================================
-   MINUS BUTTON
+   MINUS
 ========================================= */
 decreaseButton.addEventListener(
     "click",
@@ -150,9 +145,7 @@ decreaseButton.addEventListener(
 ========================================= */
 quantityInput.addEventListener(
     "input",
-    function () {
-        updateTotal();
-    }
+    updateTotal
 );
 /* =========================================
    PLACE ORDER
@@ -162,16 +155,12 @@ placeOrderButton.addEventListener(
     async function () {
         const customerName =
             document
-                .getElementById(
-                    "customerName"
-                )
+                .getElementById("customerName")
                 .value
                 .trim();
         const customerPhone =
             document
-                .getElementById(
-                    "customerPhone"
-                )
+                .getElementById("customerPhone")
                 .value
                 .trim();
         const quantity =
@@ -180,13 +169,11 @@ placeOrderButton.addEventListener(
             );
         const address =
             document
-                .getElementById(
-                    "address"
-                )
+                .getElementById("address")
                 .value
                 .trim();
         /* =====================================
-           NAME VALIDATION
+           VALIDATION
         ===================================== */
         if (customerName === "") {
             showMessage(
@@ -195,9 +182,6 @@ placeOrderButton.addEventListener(
             );
             return;
         }
-        /* =====================================
-           PHONE VALIDATION
-        ===================================== */
         if (
             !/^[0-9]{10}$/.test(
                 customerPhone
@@ -209,9 +193,6 @@ placeOrderButton.addEventListener(
             );
             return;
         }
-        /* =====================================
-           QUANTITY VALIDATION
-        ===================================== */
         if (
             isNaN(quantity) ||
             quantity < MINIMUM_ORDER
@@ -222,9 +203,6 @@ placeOrderButton.addEventListener(
             );
             return;
         }
-        /* =====================================
-           ADDRESS VALIDATION
-        ===================================== */
         if (address === "") {
             showMessage(
                 "❌ Please enter your delivery address.",
@@ -232,27 +210,37 @@ placeOrderButton.addEventListener(
             );
             return;
         }
-        /* =====================================
-           CHECK SUPABASE
-        ===================================== */
         if (!window.manaSupabase) {
             showMessage(
-                "❌ Database is still connecting. Please wait a moment and try again.",
+                "❌ Database is still connecting. Please try again.",
                 "error"
-            );
-            console.error(
-                "❌ manaSupabase is not available."
             );
             return;
         }
         /* =====================================
-           CALCULATE TOTAL
+           TOTAL
         ===================================== */
         const total =
-            quantity *
-            PRICE_PER_KG;
+            quantity * PRICE_PER_KG;
         /* =====================================
-           DISABLE BUTTON
+           ORDER OBJECT
+        ===================================== */
+        const orderData = {
+            customer_name:
+                customerName,
+            customer_phone:
+                customerPhone,
+            quantity_kg:
+                quantity,
+            address:
+                address,
+            total_amount:
+                total,
+            status:
+                "New"
+        };
+        /* =====================================
+           BUTTON
         ===================================== */
         placeOrderButton.disabled =
             true;
@@ -260,124 +248,67 @@ placeOrderButton.addEventListener(
             "Placing Order...";
         try {
             console.log(
-                "================================="
-            );
-            console.log(
-                "📦 MANA MASALA ORDER STARTED"
-            );
-            console.log(
-                "================================="
-            );
-            console.log(
-                "Customer:",
-                customerName
-            );
-            console.log(
-                "Phone:",
-                customerPhone
-            );
-            console.log(
-                "Quantity:",
-                quantity
-            );
-            console.log(
-                "Total:",
-                total
+                "📦 Saving Mana Masala order..."
             );
             /* =================================
-               INSERT ORDER
+               INSERT ONLY
+               
+               IMPORTANT:
+               No .select()
+               No .single()
+               
+               This prevents the anonymous
+               customer from needing SELECT
+               permission.
             ================================= */
-            const { data, error } =
+            const { error } =
                 await window.manaSupabase
                     .from("orders")
                     .insert([
-                        {
-                            customer_name:
-                                customerName,
-                            customer_phone:
-                                customerPhone,
-                            quantity_kg:
-                                quantity,
-                            address:
-                                address,
-                            total_amount:
-                                total,
-                            status:
-                                "New"
-                        }
-                    ])
-                    .select()
-                    .single();
+                        orderData
+                    ]);
             /* =================================
                DATABASE ERROR
             ================================= */
             if (error) {
                 console.error(
-                    "❌ SUPABASE ERROR OBJECT:"
-                );
-                console.error(
+                    "❌ SUPABASE ERROR:",
                     error
                 );
                 console.error(
-                    "================================="
-                );
-                console.error(
-                    "ERROR MESSAGE:",
+                    "MESSAGE:",
                     error.message
                 );
                 console.error(
-                    "ERROR CODE:",
+                    "CODE:",
                     error.code
                 );
                 console.error(
-                    "ERROR DETAILS:",
+                    "DETAILS:",
                     error.details
                 );
                 console.error(
-                    "ERROR HINT:",
+                    "HINT:",
                     error.hint
                 );
-                console.error(
-                    "ERROR JSON:"
-                );
-                console.error(
-                    JSON.stringify(
-                        error,
-                        null,
-                        2
-                    )
-                );
-                console.error(
-                    "================================="
-                );
                 showMessage(
-                    "❌ Order could not be saved. Check the browser console for the exact error.",
+                    "❌ Order could not be saved: " +
+                    error.message,
                     "error"
                 );
                 return;
             }
             /* =================================
-               ORDER SUCCESSFULLY SAVED
+               ORDER SAVED
             ================================= */
             console.log(
-                "================================="
-            );
-            console.log(
-                "✅ ORDER SAVED SUCCESSFULLY"
-            );
-            console.log(
-                "ORDER DATA:",
-                data
-            );
-            console.log(
-                "================================="
+                "✅ MANA MASALA ORDER SAVED"
             );
             /* =================================
                CALL EDGE FUNCTION
             ================================= */
             console.log(
-                "📧 Calling Edge Function:",
-                EDGE_FUNCTION_NAME
+                "📧 Sending order notification..."
             );
             const {
                 data: notificationData,
@@ -389,57 +320,35 @@ placeOrderButton.addEventListener(
                         EDGE_FUNCTION_NAME,
                         {
                             body: {
-                                order: data
+                                order:
+                                    orderData
                             }
                         }
                     );
             /* =================================
-               EDGE FUNCTION ERROR
+               NOTIFICATION ERROR
             ================================= */
             if (notificationError) {
                 console.error(
-                    "❌ EDGE FUNCTION ERROR OBJECT:"
-                );
-                console.error(
+                    "❌ NOTIFICATION ERROR:",
                     notificationError
                 );
-                console.error(
-                    "NOTIFICATION ERROR MESSAGE:",
-                    notificationError.message
-                );
-                console.error(
-                    "NOTIFICATION ERROR DETAILS:",
-                    notificationError.details
-                );
-                console.error(
-                    "NOTIFICATION ERROR CONTEXT:",
-                    notificationError.context
-                );
                 /*
-                 IMPORTANT:
-                 The order is already saved.
-                 Do not tell the customer
-                 that the order failed.
+                 Order is already saved.
+                 Therefore the customer should
+                 still see a successful order.
                 */
                 showMessage(
                     "✅ Order placed successfully! Total amount: ₹" +
-                    total.toLocaleString("en-IN") +
-                    ". Notification is being processed.",
+                    total.toLocaleString("en-IN"),
                     "success"
                 );
             } else {
                 console.log(
-                    "================================="
+                    "✅ EMAIL NOTIFICATION SENT"
                 );
                 console.log(
-                    "✅ EMAIL NOTIFICATION FUNCTION COMPLETED"
-                );
-                console.log(
-                    "NOTIFICATION RESPONSE:",
                     notificationData
-                );
-                console.log(
-                    "================================="
                 );
                 showMessage(
                     "✅ Order placed successfully! Total amount: ₹" +
@@ -464,33 +373,18 @@ placeOrderButton.addEventListener(
             updateTotal();
         } catch (error) {
             console.error(
-                "================================="
-            );
-            console.error(
-                "❌ UNEXPECTED ERROR"
-            );
-            console.error(
+                "❌ UNEXPECTED ERROR:",
                 error
             );
             console.error(
-                "ERROR MESSAGE:",
+                "MESSAGE:",
                 error.message
-            );
-            console.error(
-                "ERROR STACK:",
-                error.stack
-            );
-            console.error(
-                "================================="
             );
             showMessage(
                 "❌ Something went wrong. Please try again.",
                 "error"
             );
         } finally {
-            /* =================================
-               ENABLE BUTTON
-            ================================= */
             placeOrderButton.disabled =
                 false;
             placeOrderButton.textContent =
