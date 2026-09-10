@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mana Masala | Homemade Chilli Powder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <header class="navbar">
+        <div class="logo">
+            🌶️ Mana Masala
+        </div>
+        <nav>
+            <a href="#home">Home</a>
+            <a href="#product">Product</a>
+            <a href="#order">Order</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <p class="tagline">
+                🌶️ Homemade • Fresh • Authentic
+            </p>
+            <h1>
+                Taste the Tradition<br>
+                of <span>Mana Masala</span>
+            </h1>
+            <p class="description">
+                Fresh homemade chilli powder made with care
+                for delicious taste and authentic flavour.
+            </p>
+            <a href="#product" class="main-button">
+                Explore Our Product
+            </a>
+        </div>
+    </section>
+    <!-- Product Section -->
+    <section id="product" class="product-section">
+        <p class="small-title">OUR PRODUCT</p>
+        <h2>Homemade Chilli Powder</h2>
+        <div class="product-card">
+            <div class="product-image">
+                🌶️
+            </div>
+            <div class="product-info">
+                <h3>Mana Masala Chilli Powder</h3>
+                <p>
+                    Carefully prepared homemade chilli powder
+                    for everyday cooking and authentic flavour.
+                </p>
+                <div class="price">
+                    ₹400 <span>/ kg</span>
+                </div>
+                <p class="minimum">
+                    Minimum order: 10 kg
+                </p>
+                <a href="#order" class="main-button">
+                    Place Order
+                </a>
+            </div>
+        </div>
+    </section>
+    <!-- Order Section -->
+    <section id="order" class="order-section">
+        <p class="small-title">ORDER NOW</p>
+        <h2>Place Your Order</h2>
+        <div class="order-box">
+            <label for="customerName">
+                Your Name
+            </label>
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Enter your name"
+            >
+            <label for="customerPhone">
+                Phone Number
+            </label>
+            <input
+                type="tel"
+                id="customerPhone"
+                placeholder="Enter your phone number"
+            >
+            <label for="quantity">
+                Quantity (kg)
+            </label>
+            <div class="quantity-box">
+                <button
+                    type="button"
+                    id="decreaseQuantity"
+                >
+                    −
+                </button>
+                <input
+                    type="number"
+                    id="quantity"
+                    value="10"
+                    min="10"
+                >
+                <button
+                    type="button"
+                    id="increaseQuantity"
+                >
+                    +
+                </button>
+            </div>
+            <label for="address">
+                Delivery Address
+            </label>
+            <textarea
+                id="address"
+                rows="4"
+                placeholder="Enter your complete delivery address"
+            ></textarea>
+            <!-- Order Summary -->
+            <div class="order-summary">
+                <div>
+                    <span>Quantity</span>
+                    <strong>
+                        <span id="summaryQuantity">10</span>
+                        kg
+                    </strong>
+                </div>
+                <div>
+                    <span>Total</span>
+                    <strong>
+                        ₹<span id="totalPrice">4000</span>
+                    </strong>
+                </div>
+            </div>
+            <button
+                type="button"
+                id="placeOrderButton"
+                class="order-button"
+            >
+                Place Order
+            </button>
+            <p id="orderMessage"></p>
+        </div>
+    </section>
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <p class="small-title">ABOUT US</p>
+        <h2>Made With Care</h2>
+        <p>
+            Mana Masala brings you homemade chilli powder
+            prepared with care, quality ingredients and
+            authentic taste.
+        </p>
+    </section>
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <p class="small-title">CONTACT</p>
+        <h2>Get In Touch</h2>
+        <p>
+            For orders and enquiries, contact us on WhatsApp.
+        </p>
+        <a
+            class="whatsapp-button"
+            href="https://wa.me/918367450301"
+            target="_blank"
+        >
+            💬 Contact on WhatsApp
+        </a>
+    </section>
+    <!-- Footer -->
+    <footer>
+        <h3>🌶️ Mana Masala</h3>
+        <p>Homemade Chilli Powder</p>
+        <p>
+            © 2026 Mana Masala. All rights reserved.
+        </p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
