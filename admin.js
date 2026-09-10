@@ -4,7 +4,7 @@
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
 const SUPABASE_KEY =
-    "PASTE_YOUR_PUBLISHABLE_KEY_HERE";
+    "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
 let supabaseClient = null;
 // ==========================================
 // LOAD SUPABASE
@@ -39,7 +39,7 @@ async function initializeAdmin() {
         if (
             !SUPABASE_KEY ||
             SUPABASE_KEY ===
-            "PASTE_YOUR_PUBLISHABLE_KEY_HERE"
+            "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI"
         ) {
             showError(
                 "Supabase Publishable Key is missing in admin.js"
