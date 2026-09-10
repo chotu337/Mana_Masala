@@ -240,6 +240,9 @@ placeOrderButton.addEventListener(
                 "❌ Database is still connecting. Please wait a moment and try again.",
                 "error"
             );
+            console.error(
+                "❌ manaSupabase is not available."
+            );
             return;
         }
         /* =====================================
@@ -257,7 +260,29 @@ placeOrderButton.addEventListener(
             "Placing Order...";
         try {
             console.log(
-                "📦 Saving Mana Masala order..."
+                "================================="
+            );
+            console.log(
+                "📦 MANA MASALA ORDER STARTED"
+            );
+            console.log(
+                "================================="
+            );
+            console.log(
+                "Customer:",
+                customerName
+            );
+            console.log(
+                "Phone:",
+                customerPhone
+            );
+            console.log(
+                "Quantity:",
+                quantity
+            );
+            console.log(
+                "Total:",
+                total
             );
             /* =================================
                INSERT ORDER
@@ -288,25 +313,71 @@ placeOrderButton.addEventListener(
             ================================= */
             if (error) {
                 console.error(
-                    "❌ SUPABASE ERROR:",
+                    "❌ SUPABASE ERROR OBJECT:"
+                );
+                console.error(
                     error
                 );
+                console.error(
+                    "================================="
+                );
+                console.error(
+                    "ERROR MESSAGE:",
+                    error.message
+                );
+                console.error(
+                    "ERROR CODE:",
+                    error.code
+                );
+                console.error(
+                    "ERROR DETAILS:",
+                    error.details
+                );
+                console.error(
+                    "ERROR HINT:",
+                    error.hint
+                );
+                console.error(
+                    "ERROR JSON:"
+                );
+                console.error(
+                    JSON.stringify(
+                        error,
+                        null,
+                        2
+                    )
+                );
+                console.error(
+                    "================================="
+                );
                 showMessage(
-                    "❌ " +
-                    error.message,
+                    "❌ Order could not be saved. Check the browser console for the exact error.",
                     "error"
                 );
                 return;
             }
+            /* =================================
+               ORDER SUCCESSFULLY SAVED
+            ================================= */
             console.log(
-                "✅ ORDER SAVED:",
+                "================================="
+            );
+            console.log(
+                "✅ ORDER SAVED SUCCESSFULLY"
+            );
+            console.log(
+                "ORDER DATA:",
                 data
+            );
+            console.log(
+                "================================="
             );
             /* =================================
                CALL EDGE FUNCTION
             ================================= */
             console.log(
-                "📧 Sending notification..."
+                "📧 Calling Edge Function:",
+                EDGE_FUNCTION_NAME
             );
             const {
                 data: notificationData,
@@ -323,17 +394,31 @@ placeOrderButton.addEventListener(
                         }
                     );
             /* =================================
-               NOTIFICATION ERROR
+               EDGE FUNCTION ERROR
             ================================= */
             if (notificationError) {
                 console.error(
-                    "❌ NOTIFICATION ERROR:",
+                    "❌ EDGE FUNCTION ERROR OBJECT:"
+                );
+                console.error(
                     notificationError
+                );
+                console.error(
+                    "NOTIFICATION ERROR MESSAGE:",
+                    notificationError.message
+                );
+                console.error(
+                    "NOTIFICATION ERROR DETAILS:",
+                    notificationError.details
+                );
+                console.error(
+                    "NOTIFICATION ERROR CONTEXT:",
+                    notificationError.context
                 );
                 /*
                  IMPORTANT:
-                 The order was already saved.
-                 Therefore we don't tell the customer
+                 The order is already saved.
+                 Do not tell the customer
                  that the order failed.
                 */
                 showMessage(
@@ -344,8 +429,17 @@ placeOrderButton.addEventListener(
                 );
             } else {
                 console.log(
-                    "✅ NOTIFICATION RESPONSE:",
+                    "================================="
+                );
+                console.log(
+                    "✅ EMAIL NOTIFICATION FUNCTION COMPLETED"
+                );
+                console.log(
+                    "NOTIFICATION RESPONSE:",
                     notificationData
+                );
+                console.log(
+                    "================================="
                 );
                 showMessage(
                     "✅ Order placed successfully! Total amount: ₹" +
@@ -370,12 +464,27 @@ placeOrderButton.addEventListener(
             updateTotal();
         } catch (error) {
             console.error(
-                "❌ UNEXPECTED ERROR:",
+                "================================="
+            );
+            console.error(
+                "❌ UNEXPECTED ERROR"
+            );
+            console.error(
                 error
             );
+            console.error(
+                "ERROR MESSAGE:",
+                error.message
+            );
+            console.error(
+                "ERROR STACK:",
+                error.stack
+            );
+            console.error(
+                "================================="
+            );
             showMessage(
-                "❌ " +
-                error.message,
+                "❌ Something went wrong. Please try again.",
                 "error"
             );
         } finally {
