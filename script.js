@@ -1,6 +1,6 @@
 /* =========================================================
    MANA MASALA - COMPLETE ORDER SYSTEM
-   Supabase + Owner Email Notification
+   Supabase + Owner Email Notification + Payment QR
 ========================================================= */
 
 const SUPABASE_URL =
@@ -100,26 +100,48 @@ function setupOrderSystem() {
         document.getElementById("quantity");
 
     const decreaseButton =
-        document.getElementById("decreaseQuantity");
+        document.getElementById(
+            "decreaseQuantity"
+        );
 
     const increaseButton =
-        document.getElementById("increaseQuantity");
+        document.getElementById(
+            "increaseQuantity"
+        );
 
     const summaryQuantity =
-        document.getElementById("summaryQuantity");
+        document.getElementById(
+            "summaryQuantity"
+        );
 
     const totalPrice =
-        document.getElementById("totalPrice");
+        document.getElementById(
+            "totalPrice"
+        );
+
+    const paymentAmount =
+        document.getElementById(
+            "paymentAmount"
+        );
+
+    const paymentAmountInstruction =
+        document.getElementById(
+            "paymentAmountInstruction"
+        );
 
     const placeOrderButton =
-        document.getElementById("placeOrderButton");
+        document.getElementById(
+            "placeOrderButton"
+        );
 
     const orderMessage =
-        document.getElementById("orderMessage");
+        document.getElementById(
+            "orderMessage"
+        );
 
 
     /* =====================================================
-       CHECK ELEMENTS
+       CHECK REQUIRED ELEMENTS
     ===================================================== */
 
     if (!quantityInput) {
@@ -153,6 +175,7 @@ function setupOrderSystem() {
         if (!orderMessage) {
 
             alert(message);
+
             return;
         }
 
@@ -186,7 +209,7 @@ function setupOrderSystem() {
 
 
     /* =====================================================
-       UPDATE SUMMARY
+       UPDATE ALL AMOUNTS
     ===================================================== */
 
     function updateSummary() {
@@ -210,7 +233,13 @@ function setupOrderSystem() {
         }
 
         const total =
-            quantity * PRICE_PER_KG;
+            quantity *
+            PRICE_PER_KG;
+
+
+        /* ---------------------------------------------
+           ORDER SUMMARY QUANTITY
+        --------------------------------------------- */
 
         if (summaryQuantity) {
 
@@ -218,16 +247,40 @@ function setupOrderSystem() {
                 quantity;
         }
 
+
+        /* ---------------------------------------------
+           ORDER SUMMARY TOTAL
+        --------------------------------------------- */
+
         if (totalPrice) {
 
             totalPrice.textContent =
                 total.toLocaleString("en-IN");
         }
+
+
+        /* ---------------------------------------------
+           PAYMENT QR AMOUNT
+        --------------------------------------------- */
+
+        if (paymentAmount) {
+
+            paymentAmount.textContent =
+                total.toLocaleString("en-IN");
+        }
+
+
+        if (paymentAmountInstruction) {
+
+            paymentAmountInstruction.textContent =
+                total.toLocaleString("en-IN");
+        }
+
     }
 
 
     /* =====================================================
-       DECREASE
+       DECREASE QUANTITY
     ===================================================== */
 
     if (decreaseButton) {
@@ -259,13 +312,15 @@ function setupOrderSystem() {
                     quantity;
 
                 updateSummary();
+
             }
         );
+
     }
 
 
     /* =====================================================
-       INCREASE
+       INCREASE QUANTITY
     ===================================================== */
 
     if (increaseButton) {
@@ -297,8 +352,10 @@ function setupOrderSystem() {
                     quantity;
 
                 updateSummary();
+
             }
         );
+
     }
 
 
@@ -335,7 +392,7 @@ function setupOrderSystem() {
 
 
             /* ---------------------------------------------
-               GET FIELDS
+               GET CUSTOMER DETAILS
             --------------------------------------------- */
 
             const nameElement =
@@ -353,15 +410,18 @@ function setupOrderSystem() {
                     "address"
                 );
 
+
             const customerName =
                 nameElement
                     ? nameElement.value.trim()
                     : "";
 
+
             const customerPhone =
                 phoneElement
                     ? phoneElement.value.trim()
                     : "";
+
 
             const address =
                 addressElement
@@ -469,6 +529,7 @@ function setupOrderSystem() {
 
                 status:
                     "New"
+
             };
 
 
@@ -500,17 +561,18 @@ function setupOrderSystem() {
                     throw new Error(
                         "Supabase is not initialized."
                     );
+
                 }
 
 
                 /* =========================================
                    SAVE ORDER
-                   
+
                    IMPORTANT:
-                   DO NOT USE .select().single()
-                   
-                   Anonymous users can INSERT,
-                   but they cannot SELECT orders.
+                   No .select().single()
+
+                   Customer can INSERT but cannot
+                   SELECT customer orders.
                 ========================================= */
 
                 console.log(
@@ -540,6 +602,7 @@ function setupOrderSystem() {
                         insertError
                     );
 
+
                     showMessage(
 
                         "Order could not be saved.\n\n" +
@@ -566,7 +629,7 @@ function setupOrderSystem() {
 
 
                 /* =========================================
-                   SEND OWNER NOTIFICATION
+                   OWNER EMAIL NOTIFICATION
                 ========================================= */
 
                 try {
@@ -609,8 +672,8 @@ function setupOrderSystem() {
                             "NOTIFICATION SUCCESS:",
                             notificationData
                         );
-                    }
 
+                    }
 
                 } catch (
                     notificationException
@@ -620,6 +683,7 @@ function setupOrderSystem() {
                         "Notification exception:",
                         notificationException
                     );
+
                 }
 
 
@@ -641,6 +705,7 @@ function setupOrderSystem() {
 
                     nameElement.value =
                         "";
+
                 }
 
 
@@ -648,6 +713,7 @@ function setupOrderSystem() {
 
                     phoneElement.value =
                         "";
+
                 }
 
 
@@ -655,11 +721,13 @@ function setupOrderSystem() {
 
                     addressElement.value =
                         "";
+
                 }
 
 
                 quantityInput.value =
                     MINIMUM_ORDER;
+
 
                 updateSummary();
 
@@ -679,9 +747,7 @@ function setupOrderSystem() {
                 showMessage(
 
                     "Order could not be completed.\n\n" +
-
                     "Error: " +
-
                     (
                         error?.message ||
                         "Unknown error"
@@ -689,7 +755,6 @@ function setupOrderSystem() {
 
                     true
                 );
-
 
             } finally {
 
@@ -702,6 +767,7 @@ function setupOrderSystem() {
 
                 placeOrderButton.innerHTML =
                     "Confirm & Place Order <span>→</span>";
+
             }
 
         }
