@@ -12,19 +12,26 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
 
+
 // ==========================================
 // CREATE SUPABASE CLIENT
 // ==========================================
 
 let supabaseClient = null;
 
+
 function initializeSupabase() {
 
     if (!window.supabase) {
-        console.error("Supabase library not loaded.");
+
+        console.error(
+            "Supabase library not loaded."
+        );
+
         showLoginMessage(
             "Supabase library could not be loaded."
         );
+
         return false;
     }
 
@@ -57,13 +64,17 @@ function initializeSupabase() {
     }
 }
 
+
 // ==========================================
 // ELEMENT HELPER
 // ==========================================
 
 function getElement(id) {
+
     return document.getElementById(id);
+
 }
+
 
 // ==========================================
 // LOGIN MESSAGE
@@ -75,9 +86,12 @@ function showLoginMessage(message) {
         getElement("loginMessage");
 
     if (element) {
-        element.textContent = message;
+
+        element.textContent =
+            message;
     }
 }
+
 
 // ==========================================
 // DASHBOARD MESSAGE
@@ -89,9 +103,12 @@ function showDashboardMessage(message) {
         getElement("dashboardMessage");
 
     if (element) {
-        element.textContent = message;
+
+        element.textContent =
+            message;
     }
 }
+
 
 // ==========================================
 // SHOW LOGIN
@@ -106,13 +123,18 @@ function showLogin() {
         getElement("dashboardSection");
 
     if (loginSection) {
-        loginSection.style.display = "flex";
+
+        loginSection.style.display =
+            "flex";
     }
 
     if (dashboardSection) {
-        dashboardSection.style.display = "none";
+
+        dashboardSection.style.display =
+            "none";
     }
 }
+
 
 // ==========================================
 // SHOW DASHBOARD
@@ -127,13 +149,18 @@ function showDashboard() {
         getElement("dashboardSection");
 
     if (loginSection) {
-        loginSection.style.display = "none";
+
+        loginSection.style.display =
+            "none";
     }
 
     if (dashboardSection) {
-        dashboardSection.style.display = "block";
+
+        dashboardSection.style.display =
+            "block";
     }
 }
+
 
 // ==========================================
 // CHECK CURRENT LOGIN
@@ -186,6 +213,7 @@ async function checkSession() {
         showLogin();
     }
 }
+
 
 // ==========================================
 // ADMIN LOGIN
@@ -240,14 +268,14 @@ async function loginAdmin() {
     );
 
     if (loginButton) {
-        loginButton.disabled = true;
+
+        loginButton.disabled =
+            true;
+
         loginButton.textContent =
             "Logging in...";
     }
 
-    console.log(
-        "Attempting Supabase login..."
-    );
 
     const {
         data,
@@ -255,9 +283,13 @@ async function loginAdmin() {
     } =
         await supabaseClient.auth
             .signInWithPassword({
+
                 email: email,
+
                 password: password
+
             });
+
 
     if (error) {
 
@@ -272,7 +304,10 @@ async function loginAdmin() {
         );
 
         if (loginButton) {
-            loginButton.disabled = false;
+
+            loginButton.disabled =
+                false;
+
             loginButton.textContent =
                 "Login";
         }
@@ -280,22 +315,29 @@ async function loginAdmin() {
         return;
     }
 
+
     console.log(
         "✅ Admin login successful"
     );
 
     showLoginMessage("");
 
+
     if (loginButton) {
-        loginButton.disabled = false;
+
+        loginButton.disabled =
+            false;
+
         loginButton.textContent =
             "Login";
     }
+
 
     showDashboard();
 
     await loadOrders();
 }
+
 
 // ==========================================
 // LOAD ORDERS
@@ -313,6 +355,7 @@ async function loadOrders() {
     const orderCount =
         getElement("orderCount");
 
+
     if (!tableBody) {
 
         console.error(
@@ -322,6 +365,7 @@ async function loadOrders() {
         return;
     }
 
+
     tableBody.innerHTML = `
         <tr>
             <td colspan="9">
@@ -330,14 +374,13 @@ async function loadOrders() {
         </tr>
     `;
 
+
     if (orderCount) {
+
         orderCount.textContent =
             "Loading orders...";
     }
 
-    console.log(
-        "Loading orders from Supabase..."
-    );
 
     const {
         data: orders,
@@ -353,12 +396,14 @@ async function loadOrders() {
                 }
             );
 
+
     if (error) {
 
         console.error(
             "❌ Orders error:",
             error
         );
+
 
         tableBody.innerHTML = `
             <tr>
@@ -372,7 +417,9 @@ async function loadOrders() {
             </tr>
         `;
 
+
         if (orderCount) {
+
             orderCount.textContent =
                 "Error loading orders";
         }
@@ -380,10 +427,12 @@ async function loadOrders() {
         return;
     }
 
+
     console.log(
         "✅ Orders loaded:",
         orders
     );
+
 
     if (!orders || orders.length === 0) {
 
@@ -395,7 +444,9 @@ async function loadOrders() {
             </tr>
         `;
 
+
         if (orderCount) {
+
             orderCount.textContent =
                 "0 orders";
         }
@@ -403,21 +454,27 @@ async function loadOrders() {
         return;
     }
 
+
     if (orderCount) {
 
         orderCount.textContent =
             orders.length +
-            (orders.length === 1
-                ? " order"
-                : " orders");
+            (
+                orders.length === 1
+                    ? " order"
+                    : " orders"
+            );
     }
 
+
     tableBody.innerHTML = "";
+
 
     orders.forEach(order => {
 
         const row =
             document.createElement("tr");
+
 
         const orderId =
             order.id ?? "";
@@ -440,7 +497,9 @@ async function loadOrders() {
         const status =
             order.status || "New";
 
+
         let date = "-";
+
 
         if (order.created_at) {
 
@@ -451,6 +510,7 @@ async function loadOrders() {
                     "en-IN"
                 );
         }
+
 
         row.innerHTML = `
 
@@ -540,9 +600,13 @@ async function loadOrders() {
             </td>
         `;
 
+
         tableBody.appendChild(row);
+
     });
+
 }
+
 
 // ==========================================
 // UPDATE ORDER STATUS
@@ -559,10 +623,12 @@ async function updateStatus(orderId) {
         return;
     }
 
+
     const select =
         getElement(
             "status-" + orderId
         );
+
 
     if (!select) {
 
@@ -573,14 +639,10 @@ async function updateStatus(orderId) {
         return;
     }
 
+
     const newStatus =
         select.value;
 
-    console.log(
-        "Updating order:",
-        orderId,
-        newStatus
-    );
 
     const {
         error
@@ -591,6 +653,7 @@ async function updateStatus(orderId) {
                 status: newStatus
             })
             .eq("id", orderId);
+
 
     if (error) {
 
@@ -607,16 +670,192 @@ async function updateStatus(orderId) {
         return;
     }
 
-    console.log(
-        "✅ Order status updated"
-    );
 
     alert(
         "Order status updated successfully."
     );
 
+
     await loadOrders();
 }
+
+
+// ==========================================
+// 🗑️ CLEAR ALL ORDERS
+// ==========================================
+
+async function clearAllOrders() {
+
+    if (!supabaseClient) {
+
+        alert(
+            "Supabase is not initialized."
+        );
+
+        return;
+    }
+
+
+    /*
+       First confirmation
+    */
+
+    const firstConfirm =
+        confirm(
+            "⚠️ Clear All Orders?\n\n" +
+            "This will permanently delete ALL orders " +
+            "from the Mana Masala dashboard.\n\n" +
+            "This action cannot be undone."
+        );
+
+
+    if (!firstConfirm) {
+
+        return;
+    }
+
+
+    /*
+       Second confirmation
+       Prevents accidental deletion.
+    */
+
+    const secondConfirm =
+        confirm(
+            "FINAL CONFIRMATION\n\n" +
+            "Are you absolutely sure you want to " +
+            "delete ALL orders?"
+        );
+
+
+    if (!secondConfirm) {
+
+        return;
+    }
+
+
+    const clearButton =
+        getElement(
+            "clearOrdersButton"
+        );
+
+
+    if (clearButton) {
+
+        clearButton.disabled =
+            true;
+
+        clearButton.textContent =
+            "Deleting...";
+    }
+
+
+    showDashboardMessage(
+        "Deleting all orders..."
+    );
+
+
+    try {
+
+        /*
+           Delete every row.
+
+           Using .not("id", "is", null)
+           avoids relying on a specific UUID.
+        */
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("orders")
+                .delete()
+                .not(
+                    "id",
+                    "is",
+                    null
+                );
+
+
+        if (error) {
+
+            console.error(
+                "❌ Clear orders error:",
+                error
+            );
+
+
+            showDashboardMessage(
+                "Unable to clear orders: " +
+                error.message
+            );
+
+
+            alert(
+                "Unable to clear orders.\n\n" +
+                error.message
+            );
+
+
+            return;
+        }
+
+
+        console.log(
+            "✅ All orders deleted"
+        );
+
+
+        showDashboardMessage(
+            "All orders have been cleared successfully."
+        );
+
+
+        await loadOrders();
+
+
+        alert(
+            "✅ All orders have been cleared successfully."
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Clear orders exception:",
+            error
+        );
+
+
+        showDashboardMessage(
+            "Something went wrong while clearing orders."
+        );
+
+
+        alert(
+            "Something went wrong.\n\n" +
+            (
+                error?.message ||
+                "Unknown error"
+            )
+        );
+
+
+    } finally {
+
+        if (clearButton) {
+
+            clearButton.disabled =
+                false;
+
+            clearButton.textContent =
+                "🗑️ Clear All Orders";
+        }
+
+    }
+
+}
+
 
 // ==========================================
 // LOGOUT
@@ -628,10 +867,12 @@ async function logoutAdmin() {
         return;
     }
 
+
     const {
         error
     } =
         await supabaseClient.auth.signOut();
+
 
     if (error) {
 
@@ -640,17 +881,22 @@ async function logoutAdmin() {
             error
         );
 
-        alert(error.message);
+        alert(
+            error.message
+        );
 
         return;
     }
+
 
     console.log(
         "Admin logged out"
     );
 
+
     showLogin();
 }
+
 
 // ==========================================
 // HTML SECURITY
@@ -662,31 +908,39 @@ function escapeHTML(value) {
         value === null ||
         value === undefined
     ) {
+
         return "";
     }
 
+
     return String(value)
+
         .replace(
             /&/g,
             "&amp;"
         )
+
         .replace(
             /</g,
             "&lt;"
         )
+
         .replace(
             />/g,
             "&gt;"
         )
+
         .replace(
             /"/g,
             "&quot;"
         )
+
         .replace(
             /'/g,
             "&#039;"
         );
 }
+
 
 function escapeAttribute(value) {
 
@@ -694,19 +948,24 @@ function escapeAttribute(value) {
         value === null ||
         value === undefined
     ) {
+
         return "";
     }
 
+
     return String(value)
+
         .replace(
             /\\/g,
             "\\\\"
         )
+
         .replace(
             /'/g,
             "\\'"
         );
 }
+
 
 // ==========================================
 // PAGE START
@@ -720,9 +979,12 @@ document.addEventListener(
             "🌶️ Mana Masala Admin starting..."
         );
 
-        // Login form
+
+        // LOGIN FORM
+
         const loginForm =
             getElement("loginForm");
+
 
         if (loginForm) {
 
@@ -733,13 +995,17 @@ document.addEventListener(
                     event.preventDefault();
 
                     loginAdmin();
+
                 }
             );
         }
 
-        // Logout button
+
+        // LOGOUT
+
         const logoutButton =
             getElement("logoutButton");
+
 
         if (logoutButton) {
 
@@ -749,9 +1015,12 @@ document.addEventListener(
             );
         }
 
-        // Refresh button
+
+        // REFRESH
+
         const refreshButton =
             getElement("refreshButton");
+
 
         if (refreshButton) {
 
@@ -761,15 +1030,40 @@ document.addEventListener(
             );
         }
 
-        // Initialize Supabase
+
+        // ==================================
+        // 🗑️ CLEAR ORDERS BUTTON
+        // ==================================
+
+        const clearOrdersButton =
+            getElement(
+                "clearOrdersButton"
+            );
+
+
+        if (clearOrdersButton) {
+
+            clearOrdersButton.addEventListener(
+                "click",
+                clearAllOrders
+            );
+        }
+
+
+        // INITIALIZE SUPABASE
+
         const initialized =
             initializeSupabase();
+
 
         if (!initialized) {
             return;
         }
 
-        // Check existing session
+
+        // CHECK SESSION
+
         await checkSession();
+
     }
 );
