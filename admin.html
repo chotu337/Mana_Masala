@@ -3,116 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Mana Masala | Admin Dashboard</title>
+
     <link rel="stylesheet" href="admin.css">
 </head>
+
 <body>
+
     <!-- ==============================
          LOGIN SECTION
     =============================== -->
+
     <section id="loginSection" class="login-section">
+
         <div class="login-card">
+
             <div class="logo">🌶️</div>
+
             <h1>Mana Masala</h1>
-            <p class="subtitle">Admin Dashboard</p>
+
+            <p class="subtitle">
+                Admin Dashboard
+            </p>
+
             <form id="loginForm">
+
                 <label for="adminEmail">
                     Admin Email
                 </label>
+
                 <input
                     type="email"
                     id="adminEmail"
                     placeholder="Enter admin email"
                     required
                 >
+
                 <label for="adminPassword">
                     Password
                 </label>
+
                 <input
                     type="password"
                     id="adminPassword"
                     placeholder="Enter password"
                     required
                 >
+
                 <button
                     type="submit"
                     id="loginButton"
                 >
                     Login
                 </button>
+
                 <p id="loginMessage"></p>
+
             </form>
+
         </div>
+
     </section>
+
+
     <!-- ==============================
          DASHBOARD SECTION
     =============================== -->
+
     <section
         id="dashboardSection"
         class="dashboard-section"
         style="display:none;"
     >
+
         <header class="dashboard-header">
+
             <div>
-                <h1>🌶️ Mana Masala</h1>
-                <p>Order Management Dashboard</p>
+
+                <h1>
+                    🌶️ Mana Masala
+                </h1>
+
+                <p>
+                    Order Management Dashboard
+                </p>
+
             </div>
+
             <button
                 id="logoutButton"
                 class="logout-button"
             >
                 Logout
             </button>
+
         </header>
+
+
         <main class="dashboard-container">
+
+            <!-- ==========================
+                 DASHBOARD TOP
+            =========================== -->
+
             <div class="dashboard-top">
+
                 <div>
-                    <h2>Orders</h2>
+
+                    <h2>
+                        Orders
+                    </h2>
+
                     <p id="orderCount">
                         Loading orders...
                     </p>
+
                 </div>
-                <button
-                    id="refreshButton"
-                    class="refresh-button"
-                >
-                    🔄 Refresh
-                </button>
+
+
+                <div class="dashboard-actions">
+
+                    <button
+                        id="refreshButton"
+                        class="refresh-button"
+                        type="button"
+                    >
+                        🔄 Refresh
+                    </button>
+
+
+                    <button
+                        id="clearOrdersButton"
+                        class="clear-orders-button"
+                        type="button"
+                    >
+                        🗑️ Clear All Orders
+                    </button>
+
+                </div>
+
             </div>
+
+
+            <!-- ==========================
+                 DASHBOARD MESSAGE
+            =========================== -->
+
             <div
                 id="dashboardMessage"
                 class="dashboard-message"
             ></div>
+
+
+            <!-- ==========================
+                 ORDERS TABLE
+            =========================== -->
+
             <div class="table-container">
+
                 <table>
+
                     <thead>
+
                         <tr>
+
                             <th>Order ID</th>
+
                             <th>Date</th>
+
                             <th>Customer</th>
+
                             <th>Phone</th>
+
                             <th>Quantity</th>
+
                             <th>Address</th>
+
                             <th>Total</th>
+
                             <th>Status</th>
+
                             <th>Action</th>
+
                         </tr>
+
                     </thead>
+
+
                     <tbody id="ordersTableBody">
+
                         <tr>
+
                             <td colspan="9">
                                 Loading orders...
                             </td>
+
                         </tr>
+
                     </tbody>
+
                 </table>
+
             </div>
+
         </main>
+
     </section>
+
+
     <!-- ==============================
          SUPABASE
     =============================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="admin.js?v=20260911"></script>
+
 </body>
 </html>
