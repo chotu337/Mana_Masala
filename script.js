@@ -5,7 +5,7 @@
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
 const SUPABASE_KEY =
-    "YOUR_SUPABASE_PUBLISHABLE_KEY";
+    "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
 const EDGE_FUNCTION_NAME =
     "new-order-notification";
 const PRICE_PER_KG = 400;
