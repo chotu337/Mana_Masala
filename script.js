@@ -1,18 +1,23 @@
 /* =========================================================
    MANA MASALA - COMPLETE ORDER SYSTEM
-   Supabase + Email Notification
+   Supabase + Owner Email Notification
 ========================================================= */
+
 
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
 
+
 const SUPABASE_KEY =
     "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
+
 
 const EDGE_FUNCTION_NAME =
     "new-order-notification";
 
+
 const PRICE_PER_KG = 400;
+
 const MINIMUM_ORDER = 10;
 
 
@@ -23,25 +28,39 @@ const MINIMUM_ORDER = 10;
 (function loadSupabase() {
 
     if (window.supabase) {
+
         initializeManaMasala();
+
         return;
     }
 
-    const script = document.createElement("script");
+
+    const script =
+        document.createElement("script");
+
 
     script.src =
         "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-    script.onload = initializeManaMasala;
+
+    script.onload =
+        initializeManaMasala;
+
 
     script.onerror = function () {
-        console.error("Unable to load Supabase library.");
+
+        console.error(
+            "Unable to load Supabase library."
+        );
+
 
         alert(
             "Unable to connect to the order system. " +
             "Please refresh the page and try again."
         );
+
     };
+
 
     document.head.appendChild(script);
 
@@ -55,9 +74,14 @@ const MINIMUM_ORDER = 10;
 function initializeManaMasala() {
 
     if (!window.supabase) {
-        console.error("Supabase library not available.");
+
+        console.error(
+            "Supabase library not available."
+        );
+
         return;
     }
+
 
     try {
 
@@ -67,9 +91,14 @@ function initializeManaMasala() {
                 SUPABASE_KEY
             );
 
-        console.log("Supabase initialized successfully.");
+
+        console.log(
+            "Supabase initialized successfully."
+        );
+
 
         setupOrderSystem();
+
 
     } catch (error) {
 
@@ -79,6 +108,7 @@ function initializeManaMasala() {
         );
 
     }
+
 }
 
 
@@ -91,40 +121,63 @@ function setupOrderSystem() {
     const quantityInput =
         document.getElementById("quantity");
 
+
     const decreaseButton =
-        document.getElementById("decreaseQuantity");
+        document.getElementById(
+            "decreaseQuantity"
+        );
+
 
     const increaseButton =
-        document.getElementById("increaseQuantity");
+        document.getElementById(
+            "increaseQuantity"
+        );
+
 
     const summaryQuantity =
-        document.getElementById("summaryQuantity");
+        document.getElementById(
+            "summaryQuantity"
+        );
+
 
     const totalPrice =
-        document.getElementById("totalPrice");
+        document.getElementById(
+            "totalPrice"
+        );
+
 
     const placeOrderButton =
-        document.getElementById("placeOrderButton");
+        document.getElementById(
+            "placeOrderButton"
+        );
+
 
     const orderMessage =
-        document.getElementById("orderMessage");
+        document.getElementById(
+            "orderMessage"
+        );
 
 
     /* =====================================================
-       CHECK REQUIRED ELEMENTS
+       CHECK ELEMENTS
     ===================================================== */
 
     if (!quantityInput) {
+
         console.error(
-            "Quantity input #quantity not found."
+            "Quantity input not found."
         );
+
         return;
     }
 
+
     if (!placeOrderButton) {
+
         console.error(
-            "Place Order button #placeOrderButton not found."
+            "Place Order button not found."
         );
+
         return;
     }
 
@@ -133,23 +186,52 @@ function setupOrderSystem() {
        SHOW MESSAGE
     ===================================================== */
 
-    function showMessage(message, isError = false) {
+    function showMessage(
+        message,
+        isError = false
+    ) {
 
         if (!orderMessage) {
+
             alert(message);
+
             return;
         }
 
-        orderMessage.textContent = message;
 
-        orderMessage.style.display = "block";
+        orderMessage.textContent =
+            message;
+
+
+        orderMessage.style.display =
+            "block";
+
 
         orderMessage.style.color =
-            isError ? "red" : "green";
+            isError
+                ? "#b42318"
+                : "#16803c";
 
-        orderMessage.style.fontWeight = "600";
 
-        orderMessage.style.whiteSpace = "pre-line";
+        orderMessage.style.background =
+            isError
+                ? "#fff0ef"
+                : "#effaf2";
+
+
+        orderMessage.style.border =
+            isError
+                ? "1px solid #f2c5c1"
+                : "1px solid #bfe5c9";
+
+
+        orderMessage.style.fontWeight =
+            "700";
+
+
+        orderMessage.style.whiteSpace =
+            "pre-line";
+
     }
 
 
@@ -160,31 +242,44 @@ function setupOrderSystem() {
     function updateSummary() {
 
         let quantity =
-            parseInt(quantityInput.value, 10);
+            parseInt(
+                quantityInput.value,
+                10
+            );
+
 
         if (
             isNaN(quantity) ||
             quantity < MINIMUM_ORDER
         ) {
-            quantity = MINIMUM_ORDER;
-            quantityInput.value = quantity;
+
+            quantity =
+                MINIMUM_ORDER;
+
+
+            quantityInput.value =
+                quantity;
         }
+
 
         const total =
             quantity * PRICE_PER_KG;
 
+
         if (summaryQuantity) {
 
             summaryQuantity.textContent =
-                quantity + " kg";
+                quantity;
 
         }
+
 
         if (totalPrice) {
 
             totalPrice.textContent =
-                "₹" +
-                total.toLocaleString("en-IN");
+                total.toLocaleString(
+                    "en-IN"
+                );
 
         }
 
@@ -192,7 +287,7 @@ function setupOrderSystem() {
 
 
     /* =====================================================
-       DECREASE QUANTITY
+       DECREASE
     ===================================================== */
 
     if (decreaseButton) {
@@ -207,21 +302,25 @@ function setupOrderSystem() {
                         10
                     );
 
+
                 if (
                     isNaN(quantity) ||
-                    quantity < MINIMUM_ORDER
+                    quantity <= MINIMUM_ORDER
                 ) {
-                    quantity = MINIMUM_ORDER;
-                }
 
-                if (quantity > MINIMUM_ORDER) {
+                    quantity =
+                        MINIMUM_ORDER;
+
+                } else {
 
                     quantity--;
 
-                    quantityInput.value =
-                        quantity;
-
                 }
+
+
+                quantityInput.value =
+                    quantity;
+
 
                 updateSummary();
 
@@ -232,7 +331,7 @@ function setupOrderSystem() {
 
 
     /* =====================================================
-       INCREASE QUANTITY
+       INCREASE
     ===================================================== */
 
     if (increaseButton) {
@@ -247,17 +346,25 @@ function setupOrderSystem() {
                         10
                     );
 
+
                 if (
                     isNaN(quantity) ||
                     quantity < MINIMUM_ORDER
                 ) {
-                    quantity = MINIMUM_ORDER;
+
+                    quantity =
+                        MINIMUM_ORDER;
+
+                } else {
+
+                    quantity++;
+
                 }
 
-                quantity++;
 
                 quantityInput.value =
                     quantity;
+
 
                 updateSummary();
 
@@ -268,7 +375,7 @@ function setupOrderSystem() {
 
 
     /* =====================================================
-       MANUAL QUANTITY CHANGE
+       MANUAL QUANTITY
     ===================================================== */
 
     quantityInput.addEventListener(
@@ -285,13 +392,15 @@ function setupOrderSystem() {
         "click",
         async function () {
 
+
             /* ---------------------------------------------
                CLEAR OLD MESSAGE
             --------------------------------------------- */
 
             if (orderMessage) {
 
-                orderMessage.textContent = "";
+                orderMessage.textContent =
+                    "";
 
                 orderMessage.style.display =
                     "none";
@@ -300,7 +409,7 @@ function setupOrderSystem() {
 
 
             /* ---------------------------------------------
-               GET CUSTOMER FIELDS
+               GET FIELDS
             --------------------------------------------- */
 
             const nameElement =
@@ -308,10 +417,12 @@ function setupOrderSystem() {
                     "customerName"
                 );
 
+
             const phoneElement =
                 document.getElementById(
                     "customerPhone"
                 );
+
 
             const addressElement =
                 document.getElementById(
@@ -324,10 +435,12 @@ function setupOrderSystem() {
                     ? nameElement.value.trim()
                     : "";
 
+
             const customerPhone =
                 phoneElement
                     ? phoneElement.value.trim()
                     : "";
+
 
             const address =
                 addressElement
@@ -412,11 +525,12 @@ function setupOrderSystem() {
             --------------------------------------------- */
 
             const total =
-                quantity * PRICE_PER_KG;
+                quantity *
+                PRICE_PER_KG;
 
 
             /* ---------------------------------------------
-               CREATE ORDER DATA
+               ORDER DATA
             --------------------------------------------- */
 
             const orderData = {
@@ -455,14 +569,16 @@ function setupOrderSystem() {
             placeOrderButton.disabled =
                 true;
 
-            placeOrderButton.textContent =
+
+            placeOrderButton.innerHTML =
                 "Placing Order...";
 
 
             try {
 
+
                 /* =========================================
-                   CHECK SUPABASE CLIENT
+                   SUPABASE CHECK
                 ========================================= */
 
                 if (!window.manaSupabase) {
@@ -487,7 +603,8 @@ function setupOrderSystem() {
                     data: savedOrder,
                     error: insertError
                 } =
-                    await window.manaSupabase
+                    await window
+                        .manaSupabase
                         .from("orders")
                         .insert(
                             [orderData]
@@ -497,7 +614,7 @@ function setupOrderSystem() {
 
 
                 /* =========================================
-                   HANDLE INSERT ERROR
+                   INSERT ERROR
                 ========================================= */
 
                 if (insertError) {
@@ -507,37 +624,22 @@ function setupOrderSystem() {
                         insertError
                     );
 
-                    const detailedError =
-                        [
-                            "Order could not be saved.",
-                            "",
-                            "Code: " +
-                                (
-                                    insertError.code ||
-                                    "N/A"
-                                ),
-                            "Message: " +
-                                (
-                                    insertError.message ||
-                                    "Unknown error"
-                                ),
-                            "Details: " +
-                                (
-                                    insertError.details ||
-                                    "N/A"
-                                ),
-                            "Hint: " +
-                                (
-                                    insertError.hint ||
-                                    "N/A"
-                                )
-                        ].join("\n");
-
 
                     showMessage(
-                        detailedError,
+
+                        "Order could not be saved.\n\n" +
+
+                        "Error: " +
+
+                        (
+                            insertError.message ||
+                            "Unknown error"
+                        ),
+
                         true
+
                     );
+
 
                     return;
 
@@ -545,7 +647,7 @@ function setupOrderSystem() {
 
 
                 /* =========================================
-                   ORDER SUCCESSFULLY SAVED
+                   ORDER SAVED
                 ========================================= */
 
                 console.log(
@@ -555,12 +657,8 @@ function setupOrderSystem() {
 
 
                 /* =========================================
-                   SEND NOTIFICATION
+                   SEND OWNER NOTIFICATION
                 ========================================= */
-
-                let notificationSuccessful =
-                    false;
-
 
                 try {
 
@@ -604,12 +702,12 @@ function setupOrderSystem() {
                             notificationData
                         );
 
-                        notificationSuccessful =
-                            true;
-
                     }
 
-                } catch (notificationException) {
+
+                } catch (
+                    notificationException
+                ) {
 
                     console.error(
                         "Notification exception:",
@@ -620,24 +718,13 @@ function setupOrderSystem() {
 
 
                 /* =========================================
-                   CUSTOMER SUCCESS MESSAGE
+                   SUCCESS
                 ========================================= */
 
-                if (notificationSuccessful) {
-
-                    showMessage(
-                        "Order placed successfully!\n" +
-                        "We will contact you soon."
-                    );
-
-                } else {
-
-                    showMessage(
-                        "Order placed successfully!\n" +
-                        "We will contact you soon."
-                    );
-
-                }
+                showMessage(
+                    "Order placed successfully!\n" +
+                    "Thank you for choosing Mana Masala."
+                );
 
 
                 /* =========================================
@@ -646,57 +733,45 @@ function setupOrderSystem() {
 
                 if (nameElement) {
 
-                    nameElement.value = "";
+                    nameElement.value =
+                        "";
 
                 }
+
 
                 if (phoneElement) {
 
-                    phoneElement.value = "";
+                    phoneElement.value =
+                        "";
 
                 }
+
 
                 if (addressElement) {
 
-                    addressElement.value = "";
+                    addressElement.value =
+                        "";
 
                 }
 
+
                 quantityInput.value =
                     MINIMUM_ORDER;
+
 
                 updateSummary();
 
 
             } catch (error) {
 
+
                 /* =========================================
-                   COMPLETE ERROR DETAILS
+                   COMPLETE ERROR
                 ========================================= */
 
                 console.error(
                     "COMPLETE ORDER ERROR:",
                     error
-                );
-
-                console.error(
-                    "Error message:",
-                    error?.message
-                );
-
-                console.error(
-                    "Error code:",
-                    error?.code
-                );
-
-                console.error(
-                    "Error details:",
-                    error?.details
-                );
-
-                console.error(
-                    "Error hint:",
-                    error?.hint
                 );
 
 
@@ -715,7 +790,9 @@ function setupOrderSystem() {
 
                 );
 
+
             } finally {
+
 
                 /* =========================================
                    RESTORE BUTTON
@@ -724,8 +801,9 @@ function setupOrderSystem() {
                 placeOrderButton.disabled =
                     false;
 
-                placeOrderButton.textContent =
-                    "Place Order";
+
+                placeOrderButton.innerHTML =
+                    "Confirm & Place Order <span>→</span>";
 
             }
 
