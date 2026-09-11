@@ -12,13 +12,11 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
 
-
 // ==========================================
 // CREATE SUPABASE CLIENT
 // ==========================================
 
 let supabaseClient = null;
-
 
 function initializeSupabase() {
 
@@ -64,7 +62,6 @@ function initializeSupabase() {
     }
 }
 
-
 // ==========================================
 // ELEMENT HELPER
 // ==========================================
@@ -72,9 +69,7 @@ function initializeSupabase() {
 function getElement(id) {
 
     return document.getElementById(id);
-
 }
-
 
 // ==========================================
 // LOGIN MESSAGE
@@ -86,12 +81,9 @@ function showLoginMessage(message) {
         getElement("loginMessage");
 
     if (element) {
-
-        element.textContent =
-            message;
+        element.textContent = message;
     }
 }
-
 
 // ==========================================
 // DASHBOARD MESSAGE
@@ -103,12 +95,9 @@ function showDashboardMessage(message) {
         getElement("dashboardMessage");
 
     if (element) {
-
-        element.textContent =
-            message;
+        element.textContent = message;
     }
 }
-
 
 // ==========================================
 // SHOW LOGIN
@@ -123,18 +112,13 @@ function showLogin() {
         getElement("dashboardSection");
 
     if (loginSection) {
-
-        loginSection.style.display =
-            "flex";
+        loginSection.style.display = "flex";
     }
 
     if (dashboardSection) {
-
-        dashboardSection.style.display =
-            "none";
+        dashboardSection.style.display = "none";
     }
 }
-
 
 // ==========================================
 // SHOW DASHBOARD
@@ -149,18 +133,13 @@ function showDashboard() {
         getElement("dashboardSection");
 
     if (loginSection) {
-
-        loginSection.style.display =
-            "none";
+        loginSection.style.display = "none";
     }
 
     if (dashboardSection) {
-
-        dashboardSection.style.display =
-            "block";
+        dashboardSection.style.display = "block";
     }
 }
-
 
 // ==========================================
 // CHECK CURRENT LOGIN
@@ -213,7 +192,6 @@ async function checkSession() {
         showLogin();
     }
 }
-
 
 // ==========================================
 // ADMIN LOGIN
@@ -269,13 +247,11 @@ async function loginAdmin() {
 
     if (loginButton) {
 
-        loginButton.disabled =
-            true;
+        loginButton.disabled = true;
 
         loginButton.textContent =
             "Logging in...";
     }
-
 
     const {
         data,
@@ -283,13 +259,9 @@ async function loginAdmin() {
     } =
         await supabaseClient.auth
             .signInWithPassword({
-
                 email: email,
-
                 password: password
-
             });
-
 
     if (error) {
 
@@ -305,8 +277,7 @@ async function loginAdmin() {
 
         if (loginButton) {
 
-            loginButton.disabled =
-                false;
+            loginButton.disabled = false;
 
             loginButton.textContent =
                 "Login";
@@ -315,29 +286,24 @@ async function loginAdmin() {
         return;
     }
 
-
     console.log(
         "✅ Admin login successful"
     );
 
     showLoginMessage("");
 
-
     if (loginButton) {
 
-        loginButton.disabled =
-            false;
+        loginButton.disabled = false;
 
         loginButton.textContent =
             "Login";
     }
 
-
     showDashboard();
 
     await loadOrders();
 }
-
 
 // ==========================================
 // LOAD ORDERS
@@ -355,7 +321,6 @@ async function loadOrders() {
     const orderCount =
         getElement("orderCount");
 
-
     if (!tableBody) {
 
         console.error(
@@ -365,7 +330,6 @@ async function loadOrders() {
         return;
     }
 
-
     tableBody.innerHTML = `
         <tr>
             <td colspan="9">
@@ -374,13 +338,15 @@ async function loadOrders() {
         </tr>
     `;
 
-
     if (orderCount) {
 
         orderCount.textContent =
             "Loading orders...";
     }
 
+    console.log(
+        "Loading orders from Supabase..."
+    );
 
     const {
         data: orders,
@@ -396,7 +362,6 @@ async function loadOrders() {
                 }
             );
 
-
     if (error) {
 
         console.error(
@@ -404,19 +369,15 @@ async function loadOrders() {
             error
         );
 
-
         tableBody.innerHTML = `
             <tr>
                 <td colspan="9">
                     Unable to load orders.
                     <br><br>
-                    ${escapeHTML(
-                        error.message
-                    )}
+                    ${escapeHTML(error.message)}
                 </td>
             </tr>
         `;
-
 
         if (orderCount) {
 
@@ -427,12 +388,10 @@ async function loadOrders() {
         return;
     }
 
-
     console.log(
         "✅ Orders loaded:",
         orders
     );
-
 
     if (!orders || orders.length === 0) {
 
@@ -444,7 +403,6 @@ async function loadOrders() {
             </tr>
         `;
 
-
         if (orderCount) {
 
             orderCount.textContent =
@@ -453,7 +411,6 @@ async function loadOrders() {
 
         return;
     }
-
 
     if (orderCount) {
 
@@ -466,15 +423,12 @@ async function loadOrders() {
             );
     }
 
-
     tableBody.innerHTML = "";
-
 
     orders.forEach(order => {
 
         const row =
             document.createElement("tr");
-
 
         const orderId =
             order.id ?? "";
@@ -497,9 +451,7 @@ async function loadOrders() {
         const status =
             order.status || "New";
 
-
         let date = "-";
-
 
         if (order.created_at) {
 
@@ -510,7 +462,6 @@ async function loadOrders() {
                     "en-IN"
                 );
         }
-
 
         row.innerHTML = `
 
@@ -545,7 +496,7 @@ async function loadOrders() {
             <td>
 
                 <select
-                    id="status-${escapeHTML(orderId)}"
+                    id="status-${escapeAttribute(orderId)}"
                 >
 
                     <option
@@ -600,13 +551,9 @@ async function loadOrders() {
             </td>
         `;
 
-
         tableBody.appendChild(row);
-
     });
-
 }
-
 
 // ==========================================
 // UPDATE ORDER STATUS
@@ -623,12 +570,10 @@ async function updateStatus(orderId) {
         return;
     }
 
-
     const select =
         getElement(
             "status-" + orderId
         );
-
 
     if (!select) {
 
@@ -639,10 +584,14 @@ async function updateStatus(orderId) {
         return;
     }
 
-
     const newStatus =
         select.value;
 
+    console.log(
+        "Updating order:",
+        orderId,
+        newStatus
+    );
 
     const {
         error
@@ -653,7 +602,6 @@ async function updateStatus(orderId) {
                 status: newStatus
             })
             .eq("id", orderId);
-
 
     if (error) {
 
@@ -670,15 +618,12 @@ async function updateStatus(orderId) {
         return;
     }
 
-
     alert(
         "Order status updated successfully."
     );
 
-
     await loadOrders();
 }
-
 
 // ==========================================
 // 🗑️ CLEAR ALL ORDERS
@@ -695,74 +640,52 @@ async function clearAllOrders() {
         return;
     }
 
-
-    /*
-       First confirmation
-    */
+    // FIRST CONFIRMATION
 
     const firstConfirm =
         confirm(
-            "⚠️ Clear All Orders?\n\n" +
-            "This will permanently delete ALL orders " +
-            "from the Mana Masala dashboard.\n\n" +
-            "This action cannot be undone."
+            "⚠️ Are you sure you want to delete ALL orders?"
         );
 
-
     if (!firstConfirm) {
-
         return;
     }
 
-
-    /*
-       Second confirmation
-       Prevents accidental deletion.
-    */
+    // SECOND CONFIRMATION
 
     const secondConfirm =
         confirm(
-            "FINAL CONFIRMATION\n\n" +
-            "Are you absolutely sure you want to " +
-            "delete ALL orders?"
+            "🚨 FINAL WARNING!\n\n" +
+            "All orders will be permanently deleted.\n\n" +
+            "Do you really want to continue?"
         );
 
-
     if (!secondConfirm) {
-
         return;
     }
-
 
     const clearButton =
         getElement(
             "clearOrdersButton"
         );
 
-
     if (clearButton) {
 
-        clearButton.disabled =
-            true;
+        clearButton.disabled = true;
 
         clearButton.textContent =
             "Deleting...";
     }
 
-
     showDashboardMessage(
         "Deleting all orders..."
     );
 
-
     try {
 
-        /*
-           Delete every row.
-
-           Using .not("id", "is", null)
-           avoids relying on a specific UUID.
-        */
+        console.log(
+            "🗑️ Deleting all orders..."
+        );
 
         const {
             error
@@ -776,86 +699,68 @@ async function clearAllOrders() {
                     null
                 );
 
-
         if (error) {
 
             console.error(
-                "❌ Clear orders error:",
+                "❌ DELETE ORDERS ERROR:",
                 error
             );
 
-
             showDashboardMessage(
-                "Unable to clear orders: " +
+                "Unable to delete orders: " +
                 error.message
             );
-
 
             alert(
-                "Unable to clear orders.\n\n" +
+                "Orders could not be deleted.\n\n" +
+                "Error:\n" +
                 error.message
             );
-
 
             return;
         }
 
-
         console.log(
-            "✅ All orders deleted"
+            "✅ All orders deleted successfully."
         );
-
 
         showDashboardMessage(
-            "All orders have been cleared successfully."
+            "All orders deleted successfully."
         );
-
-
-        await loadOrders();
-
 
         alert(
-            "✅ All orders have been cleared successfully."
+            "✅ All orders have been deleted successfully."
         );
 
+        await loadOrders();
 
     } catch (error) {
 
         console.error(
-            "Clear orders exception:",
+            "Clear orders error:",
             error
         );
 
-
         showDashboardMessage(
-            "Something went wrong while clearing orders."
+            "Unable to delete orders."
         );
-
 
         alert(
-            "Something went wrong.\n\n" +
-            (
-                error?.message ||
-                "Unknown error"
-            )
+            "Unable to delete orders.\n\n" +
+            error.message
         );
-
 
     } finally {
 
         if (clearButton) {
 
-            clearButton.disabled =
-                false;
+            clearButton.disabled = false;
 
             clearButton.textContent =
                 "🗑️ Clear All Orders";
         }
-
     }
-
 }
-
 
 // ==========================================
 // LOGOUT
@@ -867,12 +772,10 @@ async function logoutAdmin() {
         return;
     }
 
-
     const {
         error
     } =
         await supabaseClient.auth.signOut();
-
 
     if (error) {
 
@@ -881,22 +784,17 @@ async function logoutAdmin() {
             error
         );
 
-        alert(
-            error.message
-        );
+        alert(error.message);
 
         return;
     }
-
 
     console.log(
         "Admin logged out"
     );
 
-
     showLogin();
 }
-
 
 // ==========================================
 // HTML SECURITY
@@ -908,39 +806,16 @@ function escapeHTML(value) {
         value === null ||
         value === undefined
     ) {
-
         return "";
     }
 
-
     return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
-
 
 function escapeAttribute(value) {
 
@@ -948,24 +823,13 @@ function escapeAttribute(value) {
         value === null ||
         value === undefined
     ) {
-
         return "";
     }
 
-
     return String(value)
-
-        .replace(
-            /\\/g,
-            "\\\\"
-        )
-
-        .replace(
-            /'/g,
-            "\\'"
-        );
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'");
 }
-
 
 // ==========================================
 // PAGE START
@@ -979,12 +843,10 @@ document.addEventListener(
             "🌶️ Mana Masala Admin starting..."
         );
 
-
         // LOGIN FORM
 
         const loginForm =
             getElement("loginForm");
-
 
         if (loginForm) {
 
@@ -995,17 +857,14 @@ document.addEventListener(
                     event.preventDefault();
 
                     loginAdmin();
-
                 }
             );
         }
 
-
-        // LOGOUT
+        // LOGOUT BUTTON
 
         const logoutButton =
             getElement("logoutButton");
-
 
         if (logoutButton) {
 
@@ -1015,12 +874,10 @@ document.addEventListener(
             );
         }
 
-
-        // REFRESH
+        // REFRESH BUTTON
 
         const refreshButton =
             getElement("refreshButton");
-
 
         if (refreshButton) {
 
@@ -1030,16 +887,12 @@ document.addEventListener(
             );
         }
 
-
-        // ==================================
         // 🗑️ CLEAR ORDERS BUTTON
-        // ==================================
 
         const clearOrdersButton =
             getElement(
                 "clearOrdersButton"
             );
-
 
         if (clearOrdersButton) {
 
@@ -1049,21 +902,17 @@ document.addEventListener(
             );
         }
 
-
         // INITIALIZE SUPABASE
 
         const initialized =
             initializeSupabase();
 
-
         if (!initialized) {
             return;
         }
 
-
-        // CHECK SESSION
+        // CHECK EXISTING SESSION
 
         await checkSession();
-
     }
 );
