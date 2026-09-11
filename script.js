@@ -1,6 +1,6 @@
 /* =========================================================
    MANA MASALA - COMPLETE ORDER SYSTEM
-   Supabase + Owner Email Notification + Payment QR
+   Supabase + Owner Email Notification
 ========================================================= */
 
 const SUPABASE_URL =
@@ -32,7 +32,9 @@ const MINIMUM_ORDER = 10;
     script.src =
         "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-    script.onload = initializeManaMasala;
+    script.onload = function () {
+        initializeManaMasala();
+    };
 
     script.onerror = function () {
 
@@ -60,7 +62,7 @@ function initializeManaMasala() {
     if (!window.supabase) {
 
         console.error(
-            "Supabase library not available."
+            "Supabase library is not available."
         );
 
         return;
@@ -75,7 +77,7 @@ function initializeManaMasala() {
             );
 
         console.log(
-            "Supabase initialized successfully."
+            "Mana Masala Supabase initialized."
         );
 
         setupOrderSystem();
@@ -86,7 +88,9 @@ function initializeManaMasala() {
             "Supabase initialization error:",
             error
         );
+
     }
+
 }
 
 
@@ -100,29 +104,19 @@ function setupOrderSystem() {
         document.getElementById("quantity");
 
     const decreaseButton =
-        document.getElementById(
-            "decreaseQuantity"
-        );
+        document.getElementById("decreaseQuantity");
 
     const increaseButton =
-        document.getElementById(
-            "increaseQuantity"
-        );
+        document.getElementById("increaseQuantity");
 
     const summaryQuantity =
-        document.getElementById(
-            "summaryQuantity"
-        );
+        document.getElementById("summaryQuantity");
 
     const totalPrice =
-        document.getElementById(
-            "totalPrice"
-        );
+        document.getElementById("totalPrice");
 
     const paymentAmount =
-        document.getElementById(
-            "paymentAmount"
-        );
+        document.getElementById("paymentAmount");
 
     const paymentAmountInstruction =
         document.getElementById(
@@ -141,13 +135,13 @@ function setupOrderSystem() {
 
 
     /* =====================================================
-       CHECK REQUIRED ELEMENTS
+       REQUIRED ELEMENT CHECK
     ===================================================== */
 
     if (!quantityInput) {
 
         console.error(
-            "Quantity input not found."
+            "Quantity input was not found."
         );
 
         return;
@@ -156,7 +150,7 @@ function setupOrderSystem() {
     if (!placeOrderButton) {
 
         console.error(
-            "Place Order button not found."
+            "Place Order button was not found."
         );
 
         return;
@@ -175,8 +169,8 @@ function setupOrderSystem() {
         if (!orderMessage) {
 
             alert(message);
-
             return;
+
         }
 
         orderMessage.textContent =
@@ -200,16 +194,23 @@ function setupOrderSystem() {
                 ? "1px solid #f2c5c1"
                 : "1px solid #bfe5c9";
 
+        orderMessage.style.padding =
+            "15px";
+
+        orderMessage.style.borderRadius =
+            "8px";
+
         orderMessage.style.fontWeight =
             "700";
 
         orderMessage.style.whiteSpace =
             "pre-line";
+
     }
 
 
     /* =====================================================
-       UPDATE ALL AMOUNTS
+       UPDATE SUMMARY
     ===================================================== */
 
     function updateSummary() {
@@ -221,7 +222,7 @@ function setupOrderSystem() {
             );
 
         if (
-            isNaN(quantity) ||
+            Number.isNaN(quantity) ||
             quantity < MINIMUM_ORDER
         ) {
 
@@ -230,43 +231,34 @@ function setupOrderSystem() {
 
             quantityInput.value =
                 quantity;
+
         }
 
         const total =
-            quantity *
-            PRICE_PER_KG;
+            quantity * PRICE_PER_KG;
 
-
-        /* ---------------------------------------------
-           ORDER SUMMARY QUANTITY
-        --------------------------------------------- */
 
         if (summaryQuantity) {
 
             summaryQuantity.textContent =
                 quantity;
+
         }
 
-
-        /* ---------------------------------------------
-           ORDER SUMMARY TOTAL
-        --------------------------------------------- */
 
         if (totalPrice) {
 
             totalPrice.textContent =
                 total.toLocaleString("en-IN");
+
         }
 
-
-        /* ---------------------------------------------
-           PAYMENT QR AMOUNT
-        --------------------------------------------- */
 
         if (paymentAmount) {
 
             paymentAmount.textContent =
                 total.toLocaleString("en-IN");
+
         }
 
 
@@ -274,6 +266,7 @@ function setupOrderSystem() {
 
             paymentAmountInstruction.textContent =
                 total.toLocaleString("en-IN");
+
         }
 
     }
@@ -296,7 +289,7 @@ function setupOrderSystem() {
                     );
 
                 if (
-                    isNaN(quantity) ||
+                    Number.isNaN(quantity) ||
                     quantity <= MINIMUM_ORDER
                 ) {
 
@@ -306,6 +299,7 @@ function setupOrderSystem() {
                 } else {
 
                     quantity--;
+
                 }
 
                 quantityInput.value =
@@ -336,7 +330,7 @@ function setupOrderSystem() {
                     );
 
                 if (
-                    isNaN(quantity) ||
+                    Number.isNaN(quantity) ||
                     quantity < MINIMUM_ORDER
                 ) {
 
@@ -346,6 +340,7 @@ function setupOrderSystem() {
                 } else {
 
                     quantity++;
+
                 }
 
                 quantityInput.value =
@@ -378,7 +373,7 @@ function setupOrderSystem() {
         async function () {
 
             /* ---------------------------------------------
-               CLEAR OLD MESSAGE
+               CLEAR PREVIOUS MESSAGE
             --------------------------------------------- */
 
             if (orderMessage) {
@@ -388,11 +383,12 @@ function setupOrderSystem() {
 
                 orderMessage.style.display =
                     "none";
+
             }
 
 
             /* ---------------------------------------------
-               GET CUSTOMER DETAILS
+               GET FORM ELEMENTS
             --------------------------------------------- */
 
             const nameElement =
@@ -428,10 +424,6 @@ function setupOrderSystem() {
                     ? addressElement.value.trim()
                     : "";
 
-
-            /* ---------------------------------------------
-               GET QUANTITY
-            --------------------------------------------- */
 
             let quantity =
                 parseInt(
@@ -471,7 +463,7 @@ function setupOrderSystem() {
 
 
             if (
-                isNaN(quantity) ||
+                Number.isNaN(quantity) ||
                 quantity < MINIMUM_ORDER
             ) {
 
@@ -489,7 +481,7 @@ function setupOrderSystem() {
             if (!address) {
 
                 showMessage(
-                    "Please enter your delivery address.",
+                    "Please enter your complete delivery address.",
                     true
                 );
 
@@ -502,8 +494,7 @@ function setupOrderSystem() {
             --------------------------------------------- */
 
             const total =
-                quantity *
-                PRICE_PER_KG;
+                quantity * PRICE_PER_KG;
 
 
             /* ---------------------------------------------
@@ -534,13 +525,13 @@ function setupOrderSystem() {
 
 
             console.log(
-                "Order data:",
+                "Preparing order:",
                 orderData
             );
 
 
             /* ---------------------------------------------
-               BUTTON LOADING
+               DISABLE BUTTON
             --------------------------------------------- */
 
             placeOrderButton.disabled =
@@ -553,13 +544,13 @@ function setupOrderSystem() {
             try {
 
                 /* =========================================
-                   SUPABASE CHECK
+                   CHECK SUPABASE
                 ========================================= */
 
                 if (!window.manaSupabase) {
 
                     throw new Error(
-                        "Supabase is not initialized."
+                        "Supabase is not initialized. Please refresh the page."
                     );
 
                 }
@@ -567,12 +558,6 @@ function setupOrderSystem() {
 
                 /* =========================================
                    SAVE ORDER
-
-                   IMPORTANT:
-                   No .select().single()
-
-                   Customer can INSERT but cannot
-                   SELECT customer orders.
                 ========================================= */
 
                 console.log(
@@ -581,6 +566,7 @@ function setupOrderSystem() {
 
 
                 const {
+                    data: insertedOrder,
                     error: insertError
                 } =
                     await window
@@ -588,7 +574,9 @@ function setupOrderSystem() {
                         .from("orders")
                         .insert([
                             orderData
-                        ]);
+                        ])
+                        .select()
+                        .single();
 
 
                 /* =========================================
@@ -602,99 +590,122 @@ function setupOrderSystem() {
                         insertError
                     );
 
+                    throw new Error(
+                        "Order could not be saved.\n" +
+                        (
+                            insertError.message ||
+                            "Unknown Supabase error."
+                        )
+                    );
+
+                }
+
+
+                console.log(
+                    "Order saved:",
+                    insertedOrder
+                );
+
+
+                /* =========================================
+                   CREATE NOTIFICATION DATA
+                ========================================= */
+
+                const notificationOrder = {
+
+                    ...orderData,
+
+                    id:
+                        insertedOrder?.id ??
+                        "N/A"
+
+                };
+
+
+                /* =========================================
+                   SEND OWNER EMAIL
+                ========================================= */
+
+                console.log(
+                    "Calling email notification function..."
+                );
+
+
+                const {
+                    data: notificationData,
+                    error: notificationError
+                } =
+                    await window
+                        .manaSupabase
+                        .functions
+                        .invoke(
+                            EDGE_FUNCTION_NAME,
+                            {
+                                body: {
+                                    order:
+                                        notificationOrder
+                                }
+                            }
+                        );
+
+
+                /* =========================================
+                   EMAIL ERROR
+                ========================================= */
+
+                if (notificationError) {
+
+                    console.error(
+                        "EMAIL FUNCTION ERROR:",
+                        notificationError
+                    );
+
+
+                    let errorMessage =
+                        notificationError.message ||
+                        "Email notification failed.";
+
+
+                    /*
+                       The order was already saved.
+                       Therefore do NOT tell customer that
+                       the order itself failed.
+                    */
 
                     showMessage(
 
-                        "Order could not be saved.\n\n" +
-                        "Error: " +
-                        (
-                            insertError.message ||
-                            "Unknown error"
-                        ),
+                        "Order was saved successfully, " +
+                        "but the owner email notification failed.\n\n" +
+                        "Please contact the owner on WhatsApp:\n" +
+                        "8367450301\n\n" +
+                        "Email error: " +
+                        errorMessage,
 
                         true
                     );
 
-                    return;
-                }
+                } else {
 
-
-                /* =========================================
-                   ORDER SAVED
-                ========================================= */
-
-                console.log(
-                    "ORDER SAVED SUCCESSFULLY"
-                );
-
-
-                /* =========================================
-                   OWNER EMAIL NOTIFICATION
-                ========================================= */
-
-                try {
+                    /* =====================================
+                       EMAIL SUCCESS
+                    ===================================== */
 
                     console.log(
-                        "Sending owner notification..."
+                        "EMAIL NOTIFICATION SUCCESS:",
+                        notificationData
                     );
 
 
-                    const {
-                        data:
-                            notificationData,
-                        error:
-                            notificationError
-                    } =
-                        await window
-                            .manaSupabase
-                            .functions
-                            .invoke(
-                                EDGE_FUNCTION_NAME,
-                                {
-                                    body: {
-                                        order:
-                                            orderData
-                                    }
-                                }
-                            );
+                    showMessage(
 
+                        "Order placed successfully! ✓\n\n" +
+                        "Your order has been received.\n" +
+                        "The owner has been notified by email.\n\n" +
+                        "Thank you for choosing Mana Masala."
 
-                    if (notificationError) {
-
-                        console.error(
-                            "NOTIFICATION ERROR:",
-                            notificationError
-                        );
-
-                    } else {
-
-                        console.log(
-                            "NOTIFICATION SUCCESS:",
-                            notificationData
-                        );
-
-                    }
-
-                } catch (
-                    notificationException
-                ) {
-
-                    console.error(
-                        "Notification exception:",
-                        notificationException
                     );
 
                 }
-
-
-                /* =========================================
-                   SUCCESS
-                ========================================= */
-
-                showMessage(
-                    "Order placed successfully!\n" +
-                    "Thank you for choosing Mana Masala."
-                );
 
 
                 /* =========================================
@@ -739,21 +750,18 @@ function setupOrderSystem() {
                 ========================================= */
 
                 console.error(
-                    "COMPLETE ORDER ERROR:",
+                    "ORDER SYSTEM ERROR:",
                     error
                 );
 
 
                 showMessage(
 
-                    "Order could not be completed.\n\n" +
-                    "Error: " +
-                    (
-                        error?.message ||
-                        "Unknown error"
-                    ),
+                    error?.message ||
+                    "Something went wrong while placing the order.",
 
                     true
+
                 );
 
             } finally {
@@ -775,9 +783,14 @@ function setupOrderSystem() {
 
 
     /* =====================================================
-       INITIAL SUMMARY
+       INITIAL UPDATE
     ===================================================== */
 
     updateSummary();
 
 }
+
+
+/* =========================================================
+   END OF SCRIPT
+========================================================= */
