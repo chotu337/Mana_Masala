@@ -3,21 +3,16 @@
    Supabase + Owner Email Notification
 ========================================================= */
 
-
 const SUPABASE_URL =
     "https://hcczhnmdipqrnbxviuln.supabase.co";
-
 
 const SUPABASE_KEY =
     "sb_publishable_EHoyeiRqm91Y1XIUoLHZvw_37-6eJhI";
 
-
 const EDGE_FUNCTION_NAME =
     "new-order-notification";
 
-
 const PRICE_PER_KG = 400;
-
 const MINIMUM_ORDER = 10;
 
 
@@ -28,24 +23,16 @@ const MINIMUM_ORDER = 10;
 (function loadSupabase() {
 
     if (window.supabase) {
-
         initializeManaMasala();
-
         return;
     }
 
-
-    const script =
-        document.createElement("script");
-
+    const script = document.createElement("script");
 
     script.src =
         "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 
-
-    script.onload =
-        initializeManaMasala;
-
+    script.onload = initializeManaMasala;
 
     script.onerror = function () {
 
@@ -53,14 +40,11 @@ const MINIMUM_ORDER = 10;
             "Unable to load Supabase library."
         );
 
-
         alert(
             "Unable to connect to the order system. " +
             "Please refresh the page and try again."
         );
-
     };
-
 
     document.head.appendChild(script);
 
@@ -82,7 +66,6 @@ function initializeManaMasala() {
         return;
     }
 
-
     try {
 
         window.manaSupabase =
@@ -91,14 +74,11 @@ function initializeManaMasala() {
                 SUPABASE_KEY
             );
 
-
         console.log(
             "Supabase initialized successfully."
         );
 
-
         setupOrderSystem();
-
 
     } catch (error) {
 
@@ -106,9 +86,7 @@ function initializeManaMasala() {
             "Supabase initialization error:",
             error
         );
-
     }
-
 }
 
 
@@ -121,41 +99,23 @@ function setupOrderSystem() {
     const quantityInput =
         document.getElementById("quantity");
 
-
     const decreaseButton =
-        document.getElementById(
-            "decreaseQuantity"
-        );
-
+        document.getElementById("decreaseQuantity");
 
     const increaseButton =
-        document.getElementById(
-            "increaseQuantity"
-        );
-
+        document.getElementById("increaseQuantity");
 
     const summaryQuantity =
-        document.getElementById(
-            "summaryQuantity"
-        );
-
+        document.getElementById("summaryQuantity");
 
     const totalPrice =
-        document.getElementById(
-            "totalPrice"
-        );
-
+        document.getElementById("totalPrice");
 
     const placeOrderButton =
-        document.getElementById(
-            "placeOrderButton"
-        );
-
+        document.getElementById("placeOrderButton");
 
     const orderMessage =
-        document.getElementById(
-            "orderMessage"
-        );
+        document.getElementById("orderMessage");
 
 
     /* =====================================================
@@ -170,7 +130,6 @@ function setupOrderSystem() {
 
         return;
     }
-
 
     if (!placeOrderButton) {
 
@@ -194,44 +153,35 @@ function setupOrderSystem() {
         if (!orderMessage) {
 
             alert(message);
-
             return;
         }
-
 
         orderMessage.textContent =
             message;
 
-
         orderMessage.style.display =
             "block";
-
 
         orderMessage.style.color =
             isError
                 ? "#b42318"
                 : "#16803c";
 
-
         orderMessage.style.background =
             isError
                 ? "#fff0ef"
                 : "#effaf2";
-
 
         orderMessage.style.border =
             isError
                 ? "1px solid #f2c5c1"
                 : "1px solid #bfe5c9";
 
-
         orderMessage.style.fontWeight =
             "700";
 
-
         orderMessage.style.whiteSpace =
             "pre-line";
-
     }
 
 
@@ -247,7 +197,6 @@ function setupOrderSystem() {
                 10
             );
 
-
         if (
             isNaN(quantity) ||
             quantity < MINIMUM_ORDER
@@ -256,33 +205,24 @@ function setupOrderSystem() {
             quantity =
                 MINIMUM_ORDER;
 
-
             quantityInput.value =
                 quantity;
         }
 
-
         const total =
             quantity * PRICE_PER_KG;
-
 
         if (summaryQuantity) {
 
             summaryQuantity.textContent =
                 quantity;
-
         }
-
 
         if (totalPrice) {
 
             totalPrice.textContent =
-                total.toLocaleString(
-                    "en-IN"
-                );
-
+                total.toLocaleString("en-IN");
         }
-
     }
 
 
@@ -302,7 +242,6 @@ function setupOrderSystem() {
                         10
                     );
 
-
                 if (
                     isNaN(quantity) ||
                     quantity <= MINIMUM_ORDER
@@ -314,19 +253,14 @@ function setupOrderSystem() {
                 } else {
 
                     quantity--;
-
                 }
-
 
                 quantityInput.value =
                     quantity;
 
-
                 updateSummary();
-
             }
         );
-
     }
 
 
@@ -346,7 +280,6 @@ function setupOrderSystem() {
                         10
                     );
 
-
                 if (
                     isNaN(quantity) ||
                     quantity < MINIMUM_ORDER
@@ -358,19 +291,14 @@ function setupOrderSystem() {
                 } else {
 
                     quantity++;
-
                 }
-
 
                 quantityInput.value =
                     quantity;
 
-
                 updateSummary();
-
             }
         );
-
     }
 
 
@@ -392,7 +320,6 @@ function setupOrderSystem() {
         "click",
         async function () {
 
-
             /* ---------------------------------------------
                CLEAR OLD MESSAGE
             --------------------------------------------- */
@@ -404,7 +331,6 @@ function setupOrderSystem() {
 
                 orderMessage.style.display =
                     "none";
-
             }
 
 
@@ -417,30 +343,25 @@ function setupOrderSystem() {
                     "customerName"
                 );
 
-
             const phoneElement =
                 document.getElementById(
                     "customerPhone"
                 );
-
 
             const addressElement =
                 document.getElementById(
                     "address"
                 );
 
-
             const customerName =
                 nameElement
                     ? nameElement.value.trim()
                     : "";
 
-
             const customerPhone =
                 phoneElement
                     ? phoneElement.value.trim()
                     : "";
-
 
             const address =
                 addressElement
@@ -471,7 +392,6 @@ function setupOrderSystem() {
                 );
 
                 return;
-
             }
 
 
@@ -487,7 +407,6 @@ function setupOrderSystem() {
                 );
 
                 return;
-
             }
 
 
@@ -504,7 +423,6 @@ function setupOrderSystem() {
                 );
 
                 return;
-
             }
 
 
@@ -516,7 +434,6 @@ function setupOrderSystem() {
                 );
 
                 return;
-
             }
 
 
@@ -552,7 +469,6 @@ function setupOrderSystem() {
 
                 status:
                     "New"
-
             };
 
 
@@ -569,13 +485,11 @@ function setupOrderSystem() {
             placeOrderButton.disabled =
                 true;
 
-
             placeOrderButton.innerHTML =
                 "Placing Order...";
 
 
             try {
-
 
                 /* =========================================
                    SUPABASE CHECK
@@ -586,12 +500,17 @@ function setupOrderSystem() {
                     throw new Error(
                         "Supabase is not initialized."
                     );
-
                 }
 
 
                 /* =========================================
                    SAVE ORDER
+                   
+                   IMPORTANT:
+                   DO NOT USE .select().single()
+                   
+                   Anonymous users can INSERT,
+                   but they cannot SELECT orders.
                 ========================================= */
 
                 console.log(
@@ -600,17 +519,14 @@ function setupOrderSystem() {
 
 
                 const {
-                    data: savedOrder,
                     error: insertError
                 } =
                     await window
                         .manaSupabase
                         .from("orders")
-                        .insert(
-                            [orderData]
-                        )
-                        .select()
-                        .single();
+                        .insert([
+                            orderData
+                        ]);
 
 
                 /* =========================================
@@ -624,25 +540,19 @@ function setupOrderSystem() {
                         insertError
                     );
 
-
                     showMessage(
 
                         "Order could not be saved.\n\n" +
-
                         "Error: " +
-
                         (
                             insertError.message ||
                             "Unknown error"
                         ),
 
                         true
-
                     );
 
-
                     return;
-
                 }
 
 
@@ -651,8 +561,7 @@ function setupOrderSystem() {
                 ========================================= */
 
                 console.log(
-                    "ORDER SAVED SUCCESSFULLY:",
-                    savedOrder
+                    "ORDER SAVED SUCCESSFULLY"
                 );
 
 
@@ -663,7 +572,7 @@ function setupOrderSystem() {
                 try {
 
                     console.log(
-                        "Sending notification..."
+                        "Sending owner notification..."
                     );
 
 
@@ -681,7 +590,6 @@ function setupOrderSystem() {
                                 {
                                     body: {
                                         order:
-                                            savedOrder ||
                                             orderData
                                     }
                                 }
@@ -701,7 +609,6 @@ function setupOrderSystem() {
                             "NOTIFICATION SUCCESS:",
                             notificationData
                         );
-
                     }
 
 
@@ -713,7 +620,6 @@ function setupOrderSystem() {
                         "Notification exception:",
                         notificationException
                     );
-
                 }
 
 
@@ -735,7 +641,6 @@ function setupOrderSystem() {
 
                     nameElement.value =
                         "";
-
                 }
 
 
@@ -743,7 +648,6 @@ function setupOrderSystem() {
 
                     phoneElement.value =
                         "";
-
                 }
 
 
@@ -751,19 +655,16 @@ function setupOrderSystem() {
 
                     addressElement.value =
                         "";
-
                 }
 
 
                 quantityInput.value =
                     MINIMUM_ORDER;
 
-
                 updateSummary();
 
 
             } catch (error) {
-
 
                 /* =========================================
                    COMPLETE ERROR
@@ -787,12 +688,10 @@ function setupOrderSystem() {
                     ),
 
                     true
-
                 );
 
 
             } finally {
-
 
                 /* =========================================
                    RESTORE BUTTON
@@ -801,10 +700,8 @@ function setupOrderSystem() {
                 placeOrderButton.disabled =
                     false;
 
-
                 placeOrderButton.innerHTML =
                     "Confirm & Place Order <span>→</span>";
-
             }
 
         }
