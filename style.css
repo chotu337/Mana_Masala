@@ -1781,4 +1781,25 @@ textarea {
     }
 
 }
+.product-image {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.product-image img {
+    width: 100%;
+    max-width: 450px;
+    height: auto;
+    display: block;
+    margin: auto;
+    border-radius: 24px;
+    object-fit: contain;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.product-image img:hover {
+    transform: scale(1.03);
+}
 }
